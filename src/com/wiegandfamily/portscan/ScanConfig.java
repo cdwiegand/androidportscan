@@ -8,11 +8,8 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ScanConfig extends Activity {
-	private static final String LOGTAG = "ScanConfig";
-
 	private static final int MENU_ABOUT = 4;
 	private static final int MENU_EXIT = 5;
 
@@ -60,7 +57,6 @@ public class ScanConfig extends Activity {
 	}
 
 	/** Handler to get results/updates from scanning thread */
-	@SuppressWarnings("unused")
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
