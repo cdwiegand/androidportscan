@@ -1,11 +1,11 @@
 package com.wiegandfamily.portscan;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class ScanConfig extends Activity {
-	private static final String LOGTAG = "ScanConfig";
+	private static final String LOG_TAG = "ScanConfig";
 
 	private static final int MENU_ABOUT = 4;
 	private static final int MENU_RERUN = 6;
@@ -44,6 +44,16 @@ public class ScanConfig extends Activity {
 		NetworkScanner scanner = new NetworkScanner();
 		scanner.setHandler(handler);
 		scanner.setPortList(NetworkScanner.PORTLIST_COMMON);
+
+		// get local IP address
+		String myIP = NetworkScanner.getLocalIPAddress();
+		int idx = myIP.lastIndexOf(".");
+		myIP = myIP.substring(0, idx);
+		scanner.setNetworkSubnet(myIP);
+
+		txtBox = (TextView) findViewById(R.id.TextView01);
+		txtBox.setText(getAppString(R.string.scanning) + " " + myIP + "...");
+
 		Thread thread = new Thread(scanner);
 		thread.start();
 	}
@@ -86,7 +96,7 @@ public class ScanConfig extends Activity {
 					.getPackageName(), 0);
 			versionNumber = info.versionName;
 		} catch (Exception e) {
-			Log.e(LOGTAG, e.getMessage());
+			Log.e(LOG_TAG, e.getMessage());
 		}
 		builder
 				.setMessage("Port Scanner "

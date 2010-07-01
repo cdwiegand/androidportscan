@@ -1,14 +1,17 @@
 package com.wiegandfamily.portscan;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Enumeration;
 
 import android.os.Handler;
 import android.util.Log;
 
 public class NetworkScanner implements Runnable {
-	private static final String LOGTAG = "NetworkScanner";
+	private static final String LOG_TAG = "NetworkScanner";
 
 	public static final int MSG_DONE = 1;
 	public static final int MSG_UPDATE = 2;
@@ -35,6 +38,25 @@ public class NetworkScanner implements Runnable {
 	public void setHandler(Handler handler) {
 		this.handler = handler;
 	}
+	
+	protected static String getLocalIPAddress() {
+		try {
+			for (Enumeration<NetworkInterface> en = NetworkInterface
+					.getNetworkInterfaces(); en.hasMoreElements();) {
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf
+						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress()) {
+						return inetAddress.getHostAddress().toString();
+					}
+				}
+			}
+		} catch (SocketException ex) {
+			Log.e(LOG_TAG, ex.toString());
+		}
+		return null;
+	}
 
 	public void run() {
 		scanNetwork(this.networkSubnet, this.portList);
@@ -55,7 +77,7 @@ public class NetworkScanner implements Runnable {
 			s.setSoLinger(false, 1);
 		} catch (SocketException se) {
 			// unable to set SO_LINGER option, argh
-			Log.e(LOGTAG, se.getMessage());
+			Log.e(LOG_TAG, se.getMessage());
 		}
 		int[] ports = null;
 		switch (portList) {
@@ -103,9 +125,9 @@ public class NetworkScanner implements Runnable {
 					handler.sendMessage(handler.obtainMessage(MSG_FOUND, str));
 				s.close();
 			} catch (SocketTimeoutException e) {
-				Log.i(LOGTAG, "Timeout on socket connection to " + str);
+				Log.i(LOG_TAG, "Timeout on socket connection to " + str);
 			} catch (Exception e) {
-				Log.e(LOGTAG, e.getMessage());
+				Log.e(LOG_TAG, e.getMessage());
 			}
 	}
 }
