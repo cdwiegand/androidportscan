@@ -13,10 +13,6 @@ import android.widget.Toast;
 public class ScanConfig extends Activity {
 	private static final String LOGTAG = "ScanConfig";
 
-	private static final int MSG_DONE = 1;
-	private static final int MSG_UPDATE = 2;
-	private static final int MSG_FOUND = 3;
-	
 	private static final int MENU_ABOUT = 4;
 	private static final int MENU_EXIT = 5;
 
@@ -29,6 +25,7 @@ public class ScanConfig extends Activity {
 
 		NetworkScanner scanner = new NetworkScanner();
 		scanner.setHandler(handler);
+		scanner.setPortList(NetworkScanner.PORTLIST_COMMON);
 		Thread thread = new Thread(scanner);
 		thread.start();
 	}
@@ -69,15 +66,15 @@ public class ScanConfig extends Activity {
 		public void handleMessage(Message msg) {
 			TextView txtBox;
 			switch (msg.what) {
-			case MSG_DONE:
+			case NetworkScanner.MSG_DONE:
 				txtBox = (TextView) findViewById(R.id.TextView01);
 				txtBox.setText(getAppString(R.string.results));
 				break;
-			case MSG_UPDATE:
+			case NetworkScanner.MSG_UPDATE:
 				txtBox = (TextView) findViewById(R.id.TextView01);
 				txtBox.setText(getAppString(R.string.scanning) + " " + msg.obj.toString());
 				break;
-			case MSG_FOUND:
+			case NetworkScanner.MSG_FOUND:
 				txtBox = (TextView) findViewById(R.id.TextView02);
 				txtBox.setText(txtBox.getText().toString() + "\n" + msg.obj.toString());
 				break;
