@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Port Scanner by Chris Wiegand</string>
+    <string name="app_name">Port Scanner</string>
+<string name="ip_mode">IP Mode:</string>
+<string name="port_mode">Ports:</string>
+<string name="subnet">Subnet:</string>
+
+<string name="less_than_1024">&lt; 1024</string>
+<string name="common_ports">Common</string>
+<string name="all_ports">All</string>
+<string name="ip">IP:</string>
+<string name="scan_now">Scan Now!</string>
+<string name="results">Results</string>
+<string name="scanning">Scanning:</string>
+</resources>
