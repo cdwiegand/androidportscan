@@ -3,7 +3,6 @@ package com.wiegandfamily.portscan;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.nio.CharBuffer;
 
 import android.os.Handler;
 import android.util.Log;
@@ -17,6 +16,7 @@ public class NetworkScanner implements Runnable {
 
 	public static final int PORTLIST_COMMON = 1;
 	public static final int PORTLIST_ALL = 2;
+	public static final int PORTLIST_LESSTHAN1024 = 3;
 	protected int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143, 389, 443,
 			445, 465, 587, 993, 995 };
 
@@ -67,18 +67,22 @@ public class NetworkScanner implements Runnable {
 		case PORTLIST_COMMON:
 			ports = commonPorts;
 			break;
+		case PORTLIST_LESSTHAN1024:
+			ports = new int[1024];
+			for (int idx = 0; idx < 1024; idx++)
+				ports[idx] = idx;
+			break;
 		}
 
-		String host = "";
+		String host = networkSubnet + "." + i;
 		String str = "";
+		if (handler != null)
+			handler.sendMessage(handler.obtainMessage(MSG_UPDATE, host));
 
 		for (int idx = 0; idx < ports.length; idx++)
 			try {
 				int port = ports[idx];
-				host = networkSubnet + "." + i;
 				str = host + ":" + port;
-				if (handler != null)
-					handler.sendMessage(handler.obtainMessage(MSG_UPDATE, str));
 				java.net.InetSocketAddress remoteAddr = new java.net.InetSocketAddress(
 						host, port);
 				s.connect(remoteAddr, 10);
@@ -86,16 +90,10 @@ public class NetworkScanner implements Runnable {
 					try {
 						java.io.InputStreamReader isr = new java.io.InputStreamReader(
 								s.getInputStream());
-						CharBuffer line = CharBuffer.allocate(8 * 1024);
-						isr.read(line);
-						String tmp = line.toString();
-						int idx2 = tmp.indexOf("\n");
-						if (idx2 == 0) // first line starts with one? ok
-							str += " OK (blank line)";
-						else if (idx2 > 0) // OK we have a valid line
-							str += " OK '" + tmp.substring(0, idx2 - 1) + "'";
-						else
-							str += " OK '" + tmp + "'";
+						java.io.BufferedReader br = new java.io.BufferedReader(
+								isr);
+						String tmp = br.readLine();
+						str += " OK '" + tmp + "'";
 					} catch (Exception e) {
 						str += " OK (cant read)";
 					}

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 public class ScanConfig extends Activity {
 	private static final int MENU_ABOUT = 4;
+	private static final int MENU_RERUN = 6;
 	private static final int MENU_EXIT = 5;
 
 	/** Called when the activity is first created. */
@@ -19,7 +20,13 @@ public class ScanConfig extends Activity {
 		super.onCreate(savedInstanceState);
 		//setContentView(R.layout.main);
 		setContentView(R.layout.results);
-
+		run();
+	}
+	
+	protected void run() {
+		TextView txtBox = (TextView) findViewById(R.id.TextView02);
+		txtBox.setText("");
+		
 		NetworkScanner scanner = new NetworkScanner();
 		scanner.setHandler(handler);
 		scanner.setPortList(NetworkScanner.PORTLIST_COMMON);
@@ -31,6 +38,8 @@ public class ScanConfig extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
 				R.drawable.ic_menu_info_details);
+		menu.add(0, MENU_RERUN, 0, R.string.menu_rerun).setIcon(
+				R.drawable.ic_menu_refresh);
 		menu.add(0, MENU_EXIT, 1, R.string.menu_exit).setIcon(
 				R.drawable.ic_menu_close_clear_cancel);
 		return true;
@@ -41,6 +50,9 @@ public class ScanConfig extends Activity {
 		switch (item.getItemId()) {
 		case MENU_ABOUT:
 			showAbout();
+			return true;
+		case MENU_RERUN:
+			run();
 			return true;
 		case MENU_EXIT:
 			this.finish();

@@ -15,4 +15,5 @@
 <string name="scanning">Scanning:</string>
 <string name="menu_about">About</string>
 <string name="menu_exit">Exit</string>
+<string name="menu_rerun">Re-run</string>
 </resources>
