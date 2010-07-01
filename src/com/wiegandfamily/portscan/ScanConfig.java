@@ -1,10 +1,14 @@
 package com.wiegandfamily.portscan;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ScanConfig extends Activity {
 	private static final String LOGTAG = "ScanConfig";
@@ -12,6 +16,9 @@ public class ScanConfig extends Activity {
 	private static final int MSG_DONE = 1;
 	private static final int MSG_UPDATE = 2;
 	private static final int MSG_FOUND = 3;
+	
+	private static final int MENU_ABOUT = 4;
+	private static final int MENU_EXIT = 5;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -24,6 +31,35 @@ public class ScanConfig extends Activity {
 		scanner.setHandler(handler);
 		Thread thread = new Thread(scanner);
 		thread.start();
+	}
+	
+	/* Creates the menu items */
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
+				R.drawable.ic_menu_info_details);
+		menu.add(0, MENU_EXIT, 1, R.string.menu_exit).setIcon(
+				R.drawable.ic_menu_close_clear_cancel);
+		return true;
+	}
+	
+	/* Handles menu item selections */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_ABOUT:
+			showAbout();
+			return true;
+		case MENU_EXIT:
+			this.finish();
+			return true;
+		}
+		return false;
+	}
+	
+	public void showAbout() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Port Scanner\nCopyright 2010 by Chris Wiegand\n\nCovered by MIT license");
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 	/** Handler to get results/updates from scanning thread */
