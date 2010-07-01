@@ -1,59 +1,56 @@
 package com.wiegandfamily.portscan;
 
-import java.net.Socket;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.TextView;
 
 public class ScanConfig extends Activity {
 	private static final String LOGTAG = "ScanConfig";
-	
+
+	private static final int MSG_DONE = 1;
+	private static final int MSG_UPDATE = 2;
+	private static final int MSG_FOUND = 3;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-
-		String s = scanNetwork();
-
-		// done!
+		//setContentView(R.layout.main);
 		setContentView(R.layout.results);
 
-		TextView txtResults = (TextView) findViewById(R.id.TextView02);
-		txtResults.setText(s);
+		NetworkScanner scanner = new NetworkScanner();
+		scanner.setHandler(handler);
+		Thread thread = new Thread(scanner);
+		thread.start();
 	}
 
-	/** Called when user clicks button "Scan Now!" */
-
-	/** Runs scan against network */
-	public String scanNetwork() {
-		String ret = "";
-		for (int i = 1; i < 255; i++)
-			ret += scanBox(i);
-		return ret;
-	}
-
-	/** Runs scan against box */
-	public String scanBox(int i) {
-		String ret = "";
-		int[] commonPorts = { 22, 25, 110, 143, 80, 443 };
-		for (int idx = 0; idx < commonPorts.length; idx++)
-			try {
-				int port = commonPorts[idx];
-				java.net.InetSocketAddress remoteAddr = new java.net.InetSocketAddress(
-						"192.168.15." + i, port);
-				java.net.Socket s = new Socket();
-				s.connect(remoteAddr, 5);
-				if (s.isConnected()) {
-					ret += ",192.168.15." + i + ":" + port + ":OK\n";
-					s.close();
-				}
-			} catch (Exception e) {
-				Log.e(LOGTAG, e.getMessage());
-				Log.e(LOGTAG, e.getStackTrace().toString());
+	/** Handler to get results/updates from scanning thread */
+	@SuppressWarnings("unused")
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			TextView txtBox;
+			switch (msg.what) {
+			case MSG_DONE:
+				txtBox = (TextView) findViewById(R.id.TextView01);
+				txtBox.setText(getAppString(R.string.results));
+				break;
+			case MSG_UPDATE:
+				txtBox = (TextView) findViewById(R.id.TextView01);
+				txtBox.setText(getAppString(R.string.scanning) + " " + msg.obj.toString());
+				break;
+			case MSG_FOUND:
+				txtBox = (TextView) findViewById(R.id.TextView02);
+				txtBox.setText(txtBox.getText().toString() + "\n" + msg.obj.toString());
+				break;
 			}
-		return ret;
+		}
+	};
+	
+	protected String getAppString(int id) {
+		return getApplicationContext().getResources().getString(id);
 	}
+
 }

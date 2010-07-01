@@ -38,6 +38,7 @@ public final class R {
         public static final int port_mode=0x7f040003;
         public static final int results=0x7f04000a;
         public static final int scan_now=0x7f040009;
+        public static final int scanning=0x7f04000b;
         public static final int subnet=0x7f040004;
     }
 }
