@@ -26,9 +26,14 @@ public class NetworkScanner implements Runnable {
 	protected Handler handler = null;
 	protected int portList = PORTLIST_COMMON;
 	protected String networkSubnet = "192.168.15";
+	protected int timeoutMS = 2000;
 
 	public void setPortList(int portList) {
 		this.portList = portList;
+	}
+
+	public void setTimeout(int timeoutMS) {
+		this.timeoutMS = timeoutMS;
 	}
 
 	public void setNetworkSubnet(String networkSubnet) {
@@ -38,7 +43,7 @@ public class NetworkScanner implements Runnable {
 	public void setHandler(Handler handler) {
 		this.handler = handler;
 	}
-	
+
 	protected static String getLocalIPAddress() {
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface
@@ -107,13 +112,20 @@ public class NetworkScanner implements Runnable {
 				str = host + ":" + port;
 				java.net.InetSocketAddress remoteAddr = new java.net.InetSocketAddress(
 						host, port);
-				s.connect(remoteAddr, 10);
+				s.connect(remoteAddr, timeoutMS);
 				if (s.isConnected())
 					try {
+						java.io.OutputStreamWriter osw = new java.io.OutputStreamWriter(
+								s.getOutputStream());
 						java.io.InputStreamReader isr = new java.io.InputStreamReader(
 								s.getInputStream());
 						java.io.BufferedReader br = new java.io.BufferedReader(
 								isr);
+						try {
+							osw.write("GET / HTTP/1.1\nHost: localhost\n\n");
+						} catch (Exception e) {
+						} // ignore if we can't send HTTP request!
+						// now try to read header line (if any)
 						String tmp = br.readLine();
 						str += " OK '" + tmp + "'";
 					} catch (Exception e) {
