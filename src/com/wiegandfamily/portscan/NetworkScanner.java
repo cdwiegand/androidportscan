@@ -18,7 +18,7 @@ public class NetworkScanner implements Runnable {
 	private static final String LOG_TAG = "NetworkScanner";
 
 	private static final int DEFAULT_THREADS = 8;
-	
+
 	public static final int MSG_DONE = 1;
 	public static final int MSG_UPDATE = 2;
 	public static final int MSG_FOUND = 3;
@@ -27,9 +27,11 @@ public class NetworkScanner implements Runnable {
 	public static final int PORTLIST_ALL = 2;
 	public static final int PORTLIST_LESSTHAN1024 = 3;
 
-	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143 }; 
+	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143 };
 	// { 21, 22, 23, 25, 80, 110, 143, 389, 443, 445, 465, 587, 993, 995 };
 
+	private ExecutorService pool = null;
+	private boolean poolRunning = false;
 	protected Handler handler = null;
 	protected int portList = PORTLIST_COMMON;
 	protected String networkSubnet = "192.168.15";
@@ -57,6 +59,10 @@ public class NetworkScanner implements Runnable {
 
 	public String getNetworkSubnet() {
 		return this.networkSubnet;
+	}
+	
+	public boolean isRunning() {
+		return poolRunning;
 	}
 
 	public void setPortList(int portList) {
@@ -110,12 +116,26 @@ public class NetworkScanner implements Runnable {
 		scanNetwork(this.networkSubnet, this.portList, this.numThreads);
 	}
 
+	public void killAll() {
+		if (pool != null)
+			try {
+				pool.shutdownNow();
+			} catch (Exception ex) {
+				// ignore! best attempt to kill threads
+			}
+		poolRunning = false;
+	}
+
 	/** Runs scan against network */
 	public void scanNetwork(String networkSubnet, int portList, int numThreads) {
 		if (numThreads < 1)
 			numThreads = DEFAULT_THREADS; // default
-		ExecutorService pool = Executors.newFixedThreadPool(numThreads);
 
+		if (pool != null)
+			killAll();
+		pool = Executors.newFixedThreadPool(numThreads);
+
+		poolRunning = true;
 		for (int i = 1; i < 255; i++) {
 			String host = networkSubnet + "." + i;
 			HostScanRequest req = new HostScanRequest(host, portList, timeout,
@@ -132,6 +152,7 @@ public class NetworkScanner implements Runnable {
 
 		if (handler != null)
 			handler.sendMessage(handler.obtainMessage(MSG_DONE));
+		poolRunning = false;
 	}
 
 }

@@ -2,6 +2,11 @@ package com.wiegandfamily.portscan;
 
 import java.net.Socket;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.os.Handler;
 import android.util.Log;
 
@@ -76,25 +81,17 @@ public class PortScanRequest {
 					} catch (Exception e) {
 					} // ignore if we can't send HTTP request!
 					// now try to read header line (if any)
-					String tmp = br.readLine();
-					/*
-					Log.i(LOG_TAG, tmp);
-					if (tmp.startsWith("HTTP/")) {
-						String httpServer = "Unknown";
-						// hehe! find the header server, all real headers have
-						// to be > 2 characters (a: b is the smallest!)
-						while (tmp.toString().length() > 2) {
-							tmp = br.readLine();
-							Log.i(LOG_TAG, tmp);
-							if (tmp.startsWith("Server: ")) {
-								httpServer = tmp.substring("Server: ".length());
-								break;
-							}
-						}
-						str += " OK HTTP Server " + httpServer;
-					} else
-						*/
-						str += " OK '" + tmp + "'";
+					String tmp = "";
+					if (port == 80) {
+						HttpClient wc = new DefaultHttpClient();
+						HttpGet req = new HttpGet("http://" + host + ":" + port + "/");
+						HttpResponse resp = wc.execute(req);
+						tmp = resp.getStatusLine().toString();
+						tmp += " " + resp.getFirstHeader("Server").getValue();
+					} else {
+						tmp = br.readLine();
+					}
+					str += " OK '" + tmp + "'";
 				} catch (Exception e) {
 					Log.e(LOG_TAG, e.getMessage());
 					str += " OK (cant read)";
