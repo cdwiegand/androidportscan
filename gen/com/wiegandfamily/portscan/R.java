@@ -48,5 +48,6 @@ public final class R {
         public static final int scan_now=0x7f040009;
         public static final int scanning=0x7f04000b;
         public static final int subnet=0x7f040004;
+        public static final int wifi_only=0x7f040010;
     }
 }

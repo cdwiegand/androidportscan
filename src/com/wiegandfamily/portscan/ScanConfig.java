@@ -1,6 +1,5 @@
 package com.wiegandfamily.portscan;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -13,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ScanConfig extends Activity {
 	private static final String LOG_TAG = "ScanConfig";
@@ -41,9 +41,14 @@ public class ScanConfig extends Activity {
 		TextView txtBox = (TextView) findViewById(R.id.TextView02);
 		txtBox.setText("");
 
-		NetworkScanner scanner = new NetworkScanner();
-		scanner.setHandler(handler);
+		NetworkScanner scanner = new NetworkScanner(handler);
 		scanner.setPortList(NetworkScanner.PORTLIST_COMMON);
+
+		if (!NetworkScanner.verifyWifiConnected(this)) {
+			Toast.makeText(this, getAppString(R.string.wifi_only),
+					Toast.LENGTH_LONG).show();
+			return;
+		}
 
 		// get local IP address
 		String myIP = NetworkScanner.getLocalIPAddress();
