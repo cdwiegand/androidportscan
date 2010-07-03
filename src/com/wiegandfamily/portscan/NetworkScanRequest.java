@@ -57,7 +57,7 @@ public class NetworkScanRequest implements Runnable {
 	public int getPortList() {
 		return this.portList;
 	}
-	
+
 	public int getTimeout() {
 		return timeout;
 	}
@@ -77,7 +77,7 @@ public class NetworkScanRequest implements Runnable {
 	public boolean isRunning() {
 		return poolRunning;
 	}
-	
+
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
@@ -149,8 +149,10 @@ public class NetworkScanRequest implements Runnable {
 			int maxVal = minVal + subnetSize - 1; // give us .255
 
 			// can't send to network or broadcast addresses!
-			minVal++;
-			maxVal--;
+			if (minVal != maxVal) {
+				minVal++;
+				maxVal--;
+			}
 
 			// now add each host
 			for (int host = minVal; host <= maxVal; host++)
@@ -217,9 +219,12 @@ public class NetworkScanRequest implements Runnable {
 
 	public static List<String> getListOfSubnetMasks() {
 		List<String> items = new ArrayList<String>();
-		for (int i = 24; i <= 32; i++)
-			items.add("/" + i + " (255.255.255."
-					+ (int) (256 - Math.pow(2, 32 - i)) + ")");
+		for (int i = 24; i <= 29; i++) {
+			int subnetSize = (int) Math.pow(2, 32 - i);
+			items.add("/" + i + " (255.255.255." + (256 - subnetSize) + ") "
+					+ (subnetSize - 2) + " hosts");
+		}
+		items.add("/32 (255.255.255.255) 1 host");
 		return items;
 	}
 
