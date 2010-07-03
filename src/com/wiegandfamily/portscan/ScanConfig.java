@@ -1,5 +1,7 @@
 package com.wiegandfamily.portscan;
 
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -33,14 +35,12 @@ public class ScanConfig extends BaseWindow {
 
 		EditText txtBox = (EditText) findViewById(R.id.EditText01);
 		txtBox.setText(myIP);
-		
+		txtBox.requestFocus();
+
 		txtBox = (EditText) findViewById(R.id.EditText02);
 		txtBox.setText("1000");
 
-		String[] items = new String[] { "", "", "" };
-		items[0] = getAppString(R.string.common_ports);
-		items[1] = getAppString(R.string.less_than_1024);
-		items[2] = getAppString(R.string.all_ports);
+		List<String> items = NetworkScanRequest.getListOfPortLists(this);
 		Spinner spinner = (Spinner) findViewById(R.id.Spinner01);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, items);

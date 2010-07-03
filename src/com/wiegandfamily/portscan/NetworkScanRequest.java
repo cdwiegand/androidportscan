@@ -1,9 +1,12 @@
 package com.wiegandfamily.portscan;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
@@ -98,8 +101,10 @@ public class NetworkScanRequest implements Runnable {
 				handler.sendMessage(handler.obtainMessage(MSG_BADREQ));
 			return;
 		}
-		networkSubnet = parts[0] + "." + parts[1] + "." + parts[2]; // force the right format
-		
+		networkSubnet = parts[0] + "." + parts[1] + "." + parts[2]; // force the
+																	// right
+																	// format
+
 		poolRunning = true;
 		for (int i = 1; i < 255; i++) {
 			String host = networkSubnet + "." + i;
@@ -143,9 +148,28 @@ public class NetworkScanRequest implements Runnable {
 	}
 
 	public void parseIntent(Intent intent) {
-		this.setPortList(intent.getIntExtra(EXTRA_PORTLIST, this.getPortList()));
+		this
+				.setPortList(intent.getIntExtra(EXTRA_PORTLIST, this
+						.getPortList()));
 		this.setNetworkSubnet(intent.getStringExtra(EXTRA_NETSUBNET));
 		this.setTimeout(intent.getIntExtra(EXTRA_TIMEOUT, this.getTimeout()));
-		this.setNumThreads(intent.getIntExtra(EXTRA_NUMTHREADS, this.getNumThreads()));
+		this.setNumThreads(intent.getIntExtra(EXTRA_NUMTHREADS, this
+				.getNumThreads()));
+	}
+
+	public static List<String> getListOfPortLists(Context context) {
+		List<String> items = new ArrayList<String>();
+		items.add(BaseWindow.getAppString(context, R.string.common_ports));
+		items.add(BaseWindow.getAppString(context, R.string.less_than_1024));
+		items.add(BaseWindow.getAppString(context, R.string.all_ports));
+		return items;
+	}
+
+	public static int parsePortListString(Context context, String value) {
+		List<String> items = getListOfPortLists(context);
+		for (int i = 0; i < items.size(); i++)
+			if (items.get(i).equalsIgnoreCase(value))
+				return i + 1;
+		return 0;
 	}
 }
