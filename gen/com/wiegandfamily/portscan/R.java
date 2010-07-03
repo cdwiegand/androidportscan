@@ -29,22 +29,24 @@ public final class R {
         public static final int results=0x7f030001;
     }
     public static final class string {
-        public static final int all_ports=0x7f040007;
+        public static final int all_ports=0x7f040008;
         public static final int app_name=0x7f040001;
-        public static final int common_ports=0x7f040006;
+        public static final int badreq=0x7f040009;
+        public static final int common_ports=0x7f040007;
+        public static final int done_scanning=0x7f040005;
         public static final int hello=0x7f040000;
-        public static final int ip=0x7f040008;
+        public static final int ip=0x7f04000a;
         public static final int ip_mode=0x7f040002;
-        public static final int less_than_1024=0x7f040005;
-        public static final int menu_about=0x7f04000c;
-        public static final int menu_exit=0x7f04000d;
-        public static final int menu_rerun=0x7f04000f;
-        public static final int menu_rotate=0x7f04000e;
+        public static final int less_than_1024=0x7f040006;
+        public static final int menu_about=0x7f04000e;
+        public static final int menu_exit=0x7f04000f;
+        public static final int menu_rerun=0x7f040011;
+        public static final int menu_rotate=0x7f040010;
         public static final int port_mode=0x7f040003;
-        public static final int results=0x7f04000a;
-        public static final int scan_now=0x7f040009;
-        public static final int scanning=0x7f04000b;
+        public static final int results=0x7f04000c;
+        public static final int scan_now=0x7f04000b;
+        public static final int scanning=0x7f04000d;
         public static final int subnet=0x7f040004;
-        public static final int wifi_only=0x7f040010;
+        public static final int wifi_only=0x7f040012;
     }
 }

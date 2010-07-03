@@ -38,6 +38,10 @@ public class ScanConfig extends BaseWindow {
 				Intent intent = new Intent(getApplicationContext(),
 						ScanResults.class);
 				NetworkScanRequest nsr = new NetworkScanRequest();
+				
+				EditText txtBox = (EditText) findViewById(R.id.EditText01);
+				nsr.setNetworkSubnet(txtBox.getText().toString());
+				
 				nsr.setupIntent(intent);
 				startActivity(intent);
 			}

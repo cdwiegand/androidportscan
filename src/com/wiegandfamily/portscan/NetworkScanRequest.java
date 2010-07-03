@@ -16,6 +16,7 @@ public class NetworkScanRequest implements Runnable {
 	public static final int MSG_DONE = 1;
 	public static final int MSG_UPDATE = 2;
 	public static final int MSG_FOUND = 3;
+	public static final int MSG_BADREQ = 4;
 
 	public static final String EXTRA_PORTLIST = "EXTRA_PORTLIST";
 	public static final String EXTRA_NETSUBNET = "EXTRA_NETSUBNET";
@@ -90,6 +91,15 @@ public class NetworkScanRequest implements Runnable {
 			killAll();
 		pool = Executors.newFixedThreadPool(numThreads);
 
+		// fix networkSubnet to be x.y.z format (no fourth quad!)
+		String[] parts = networkSubnet.split(".");
+		if (parts.length < 3) {
+			if (handler != null)
+				handler.sendMessage(handler.obtainMessage(MSG_BADREQ));
+			return;
+		}
+		networkSubnet = parts[0] + "." + parts[1] + "." + parts[2]; // force the right format
+		
 		poolRunning = true;
 		for (int i = 1; i < 255; i++) {
 			String host = networkSubnet + "." + i;

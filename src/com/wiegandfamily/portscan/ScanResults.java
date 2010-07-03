@@ -1,6 +1,5 @@
 package com.wiegandfamily.portscan;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,27 +12,22 @@ public class ScanResults extends BaseWindow {
 	@SuppressWarnings("unused")
 	private static final String LOG_TAG = "ScanResults";
 
-	protected ProgressDialog pd = null;
+	protected NetworkScanRequest scanner = null;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.results);
-		
+
 		run();
 	}
 
 	protected void run() {
-		if (pd == null) {
-			pd = new ProgressDialog(this);
-			pd.show();
-		}
-
 		TextView txtBox = (TextView) findViewById(R.id.TextView02);
 		txtBox.setText("");
 
-		NetworkScanRequest scanner = new NetworkScanRequest(handler);
+		scanner = new NetworkScanRequest(handler);
 		scanner.parseIntent(getIntent());
 
 		if (!NetworkHelper.verifyWifiConnected(this)) {
@@ -43,7 +37,8 @@ public class ScanResults extends BaseWindow {
 		}
 
 		txtBox = (TextView) findViewById(R.id.TextView01);
-		txtBox.setText(getAppString(R.string.scanning) + " " + scanner.getNetworkSubnet() + "...");
+		txtBox.setText(getAppString(R.string.scanning) + " "
+				+ scanner.getNetworkSubnet() + "...");
 
 		Thread thread = new Thread(scanner);
 		thread.start();
@@ -70,6 +65,8 @@ public class ScanResults extends BaseWindow {
 			run();
 			return true;
 		case MENU_EXIT:
+			if (scanner != null)
+				scanner.killAll();
 			this.finish();
 			return true;
 		}
@@ -85,20 +82,29 @@ public class ScanResults extends BaseWindow {
 			case NetworkScanRequest.MSG_DONE:
 				txtBox = (TextView) findViewById(R.id.TextView01);
 				txtBox.setText(getAppString(R.string.results));
-				if (pd != null) {
-					pd.dismiss();
-					pd = null;
-				}
+				Toast.makeText(txtBox.getContext(),
+						getAppString(R.string.done_scanning),
+						Toast.LENGTH_SHORT).show();
+				scanner = null; // done!
 				break;
 			case NetworkScanRequest.MSG_UPDATE:
-				if (pd != null)
-					pd.setMessage(getAppString(R.string.scanning) + " "
-							+ msg.obj.toString());
+				txtBox = (TextView) findViewById(R.id.TextView01);
+				txtBox.setText(getAppString(R.string.scanning) + " "
+						+ msg.obj.toString() + "...");
+				txtBox.postInvalidate();
 				break;
 			case NetworkScanRequest.MSG_FOUND:
 				txtBox = (TextView) findViewById(R.id.TextView02);
 				txtBox.setText(txtBox.getText().toString() + "\n"
 						+ msg.obj.toString());
+				break;
+			case NetworkScanRequest.MSG_BADREQ:
+				txtBox = (TextView) findViewById(R.id.TextView02);
+				txtBox.setText(getAppString(R.string.badreq));
+				Toast.makeText(txtBox.getContext(),
+						getAppString(R.string.badreq),
+						Toast.LENGTH_SHORT).show();
+				scanner = null; // done!
 				break;
 			}
 		}
