@@ -30,8 +30,6 @@ public class ScanConfig extends BaseWindow {
 	protected void setup() {
 		// get local IP address
 		String myIP = NetworkHelper.getLocalIPAddress();
-		int idx = myIP.lastIndexOf(".");
-		myIP = myIP.substring(0, idx);
 
 		EditText txtBox = (EditText) findViewById(R.id.EditText01);
 		txtBox.setText(myIP);
@@ -41,11 +39,15 @@ public class ScanConfig extends BaseWindow {
 		txtBox.setText("1000");
 
 		List<String> items = NetworkScanRequest.getListOfPortLists(this);
-		Spinner spinner = (Spinner) findViewById(R.id.Spinner01);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, items);
-		adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		Spinner spinner = (Spinner) findViewById(R.id.Spinner03);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
+
+		items = NetworkScanRequest.getListOfSubnetMasks();
+		spinner = (Spinner) findViewById(R.id.Spinner04);
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 
 		Button btn = (Button) findViewById(R.id.Button01);
@@ -60,18 +62,19 @@ public class ScanConfig extends BaseWindow {
 					nsr.setNetworkSubnet(txtBox.getText().toString());
 
 					txtBox = (EditText) findViewById(R.id.EditText02);
-					nsr.setTimeout(Integer
-							.parseInt(txtBox.getText().toString()));
+					nsr.setTimeout(Integer.parseInt(txtBox.getText().toString()));
 
-					Spinner spin1 = (Spinner) findViewById(R.id.Spinner01);
-					nsr.setPortList(spin1.getSelectedItemPosition() + 1);
-					// Enum starts at 1, Java starts at 0
+					Spinner spinner = (Spinner) findViewById(R.id.Spinner03);
+					nsr.setPortList(NetworkScanRequest.parsePortListString(getApplicationContext(), spinner.getSelectedItem().toString()));
+
+					spinner = (Spinner) findViewById(R.id.Spinner04);
+					nsr.setSubnetBitMask(NetworkScanRequest.parseSubnetMaskString(spinner.getSelectedItem().toString()));
 
 					nsr.setupIntent(intent);
 					startActivity(intent);
 				} catch (Exception e) {
 					Toast.makeText(getApplicationContext(),
-							getAppString(R.string.badreq), Toast.LENGTH_SHORT)
+							getAppString(R.string.err_badreq), Toast.LENGTH_SHORT)
 							.show();
 				}
 			}

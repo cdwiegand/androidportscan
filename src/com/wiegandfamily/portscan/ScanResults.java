@@ -31,7 +31,7 @@ public class ScanResults extends BaseWindow {
 		scanner.parseIntent(getIntent());
 
 		if (!NetworkHelper.verifyWifiConnected(this)) {
-			Toast.makeText(this, getAppString(R.string.wifi_only),
+			Toast.makeText(this, getAppString(R.string.err_wifi_only),
 					Toast.LENGTH_LONG).show();
 			return;
 		}
@@ -100,9 +100,9 @@ public class ScanResults extends BaseWindow {
 				break;
 			case NetworkScanRequest.MSG_BADREQ:
 				txtBox = (TextView) findViewById(R.id.TextView02);
-				txtBox.setText(getAppString(R.string.badreq));
+				txtBox.setText(getAppString(R.string.err_badreq));
 				Toast.makeText(txtBox.getContext(),
-						getAppString(R.string.badreq),
+						getAppString(R.string.err_badreq),
 						Toast.LENGTH_SHORT).show();
 				scanner = null; // done!
 				break;

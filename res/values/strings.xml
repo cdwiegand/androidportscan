@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Port Scanner by Chris Wiegand</string>
-    <string name="app_name">Port Scanner</string>
-<string name="ip_mode">IP Mode:</string>
-<string name="port_mode">Ports:</string>
-<string name="conn_timeout">Connection Timeout (in milliseconds):</string>
-<string name="subnet">Subnet (x.y.z format):</string>
+<string name="hello">Port Scanner by Chris Wiegand</string>
+<string name="app_name">Port Scanner</string>
+<string name="prompt_ip_mode">IP Mode:</string>
+<string name="prompt_port_mode">Ports:</string>
+<string name="prompt_conn_timeout">Connection Timeout (in milliseconds):</string>
+<string name="prompt_subnet">IP Address / Network:</string>
+<string name="prompt_netmask">Bits in subnet mask (/24, /30):</string>
+<string name="prompt_scan_now">Scan Now!</string>
 <string name="done_scanning">Done Scanning!</string>
-<string name="less_than_1024">&lt; 1024</string>
-<string name="common_ports">Common</string>
-<string name="all_ports">All</string>
-<string name="badreq">Bad Request - Please verify your request.</string>
-<string name="ip">IP:</string>
-<string name="scan_now">Scan Now!</string>
 <string name="results">Results</string>
 <string name="scanning">Scanning:</string>
+<string name="err_badreq">Bad Request - Please verify your request.</string>
+<string name="err_wifi_only">Unable to run scan when not connected via Wifi.</string>
+<string name="opt_ports_less_than_1024">Ports &lt; 1024</string>
+<string name="opt_ports_common">Common Ports</string>
+<string name="opt_ports_all">All Ports</string>
 <string name="menu_about">About</string>
 <string name="menu_exit">Close</string>
 <string name="menu_rotate">Rotate</string>
 <string name="menu_rerun">Re-run</string>
-<string name="wifi_only">Unable to run scan when not connected via Wifi.</string>
 </resources>
