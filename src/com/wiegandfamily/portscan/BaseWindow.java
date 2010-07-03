@@ -3,6 +3,7 @@ package com.wiegandfamily.portscan;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
@@ -12,9 +13,10 @@ public class BaseWindow extends Activity {
 
 	protected static final int MENU_ABOUT = 4;
 	protected static final int MENU_RERUN = 6;
+	protected static final int MENU_PREFS = 7;
 	protected static final int MENU_EXIT = 5;
 
-	public void showAbout() {
+	protected void showAbout() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 		String versionNumber = "";
@@ -33,6 +35,11 @@ public class BaseWindow extends Activity {
 						+ "\nCopyright 2010 by Chris Wiegand\n\nCovered by MIT license");
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+	
+	protected void showPrefs() {
+		Intent intent = new Intent(getApplicationContext(), PrefsConfig.class);
+		startActivity(intent);
 	}
 
 	protected String getAppString(int id) {

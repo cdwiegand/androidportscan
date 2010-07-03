@@ -4,7 +4,8 @@
 <string name="app_name">Port Scanner</string>
 <string name="prompt_ip_mode">IP Mode:</string>
 <string name="prompt_port_mode">Ports:</string>
-<string name="prompt_conn_timeout">Connection Timeout (in milliseconds):</string>
+<string name="prompt_conn_timeout">Timeout</string>
+<string name="prompt_conn_timeout_desc">Connection timeout in milliseconds</string>
 <string name="prompt_subnet">IP Address / Network:</string>
 <string name="prompt_netmask">Bits in subnet mask (/24, /30):</string>
 <string name="prompt_scan_now">Scan Now!</string>
@@ -18,6 +19,7 @@
 <string name="opt_ports_all">All Ports</string>
 <string name="menu_about">About</string>
 <string name="menu_exit">Close</string>
+<string name="menu_prefs">Prefs</string>
 <string name="menu_rotate">Rotate</string>
 <string name="menu_rerun">Re-run</string>
 </resources>

@@ -5,11 +5,9 @@
     android:layout_height="fill_parent">
 <TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_subnet"></TextView>
 <EditText android:id="@+id/EditText01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:inputType="phone"></EditText>
-<TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_conn_timeout"></TextView>
-<EditText android:id="@+id/EditText02" android:layout_height="wrap_content" android:layout_width="fill_parent" android:inputType="phone"></EditText>
-<TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_port_mode"></TextView>
-<Spinner android:id="@+id/Spinner03" android:layout_height="wrap_content" android:layout_width="fill_parent"></Spinner>
 <TextView android:id="@+id/TextView04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_netmask"></TextView>
 <Spinner android:id="@+id/Spinner04" android:layout_height="wrap_content" android:layout_width="fill_parent"></Spinner>
+<TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_port_mode"></TextView>
+<Spinner android:id="@+id/Spinner03" android:layout_height="wrap_content" android:layout_width="fill_parent"></Spinner>
 <Button android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_scan_now" android:layout_gravity="center"></Button>
 </LinearLayout>

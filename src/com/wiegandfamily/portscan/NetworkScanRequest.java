@@ -26,8 +26,8 @@ public class NetworkScanRequest implements Runnable {
 
 	public static final String EXTRA_PORTLIST = "EXTRA_PORTLIST";
 	public static final String EXTRA_SUBNET = "EXTRA_SUBNET";
-	public static final String EXTRA_SUBNETBITMASK = "EXTRA_SUBNETBITMASK";
 	public static final String EXTRA_TIMEOUT = "EXTRA_TIMEOUT";
+	public static final String EXTRA_SUBNETBITMASK = "EXTRA_SUBNETBITMASK";
 	public static final String EXTRA_NUMTHREADS = "EXTRA_NUMTHREADS";
 
 	public static final int PORTLIST_COMMON = 1;
@@ -43,7 +43,7 @@ public class NetworkScanRequest implements Runnable {
 	protected int portList = PORTLIST_COMMON;
 	protected String networkSubnet = "192.168.15.0";
 	protected byte subnetBitMask = 24; // "/24"
-	protected int timeout = 2000;
+	protected int timeout = 1000;
 	protected int numThreads = 4;
 
 	public NetworkScanRequest() {
@@ -57,9 +57,9 @@ public class NetworkScanRequest implements Runnable {
 	public int getPortList() {
 		return this.portList;
 	}
-
+	
 	public int getTimeout() {
-		return this.timeout;
+		return timeout;
 	}
 
 	public int getNumThreads() {
@@ -77,13 +77,13 @@ public class NetworkScanRequest implements Runnable {
 	public boolean isRunning() {
 		return poolRunning;
 	}
+	
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
 
 	public void setPortList(int portList) {
 		this.portList = portList;
-	}
-
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
 	}
 
 	public void setNumThreads(int numThreads) {
@@ -174,14 +174,15 @@ public class NetworkScanRequest implements Runnable {
 
 	@Override
 	public void run() {
-		scanNetwork();
+		if (handler != null)
+			scanNetwork();
 	}
 
 	public void setupIntent(Intent intent) {
 		intent.putExtra(EXTRA_PORTLIST, this.getPortList());
 		intent.putExtra(EXTRA_SUBNET, this.getNetworkSubnet());
-		intent.putExtra(EXTRA_SUBNETBITMASK, this.getSubnetBitMask());
 		intent.putExtra(EXTRA_TIMEOUT, this.getTimeout());
+		intent.putExtra(EXTRA_SUBNETBITMASK, this.getSubnetBitMask());
 		intent.putExtra(EXTRA_NUMTHREADS, this.getNumThreads());
 	}
 
@@ -189,10 +190,10 @@ public class NetworkScanRequest implements Runnable {
 		this
 				.setPortList(intent.getIntExtra(EXTRA_PORTLIST, this
 						.getPortList()));
+		this.setTimeout(intent.getIntExtra(EXTRA_TIMEOUT, this.getTimeout()));
 		this.setNetworkSubnet(intent.getStringExtra(EXTRA_SUBNET));
 		this.setSubnetBitMask(intent.getByteExtra(EXTRA_SUBNETBITMASK, this
 				.getSubnetBitMask()));
-		this.setTimeout(intent.getIntExtra(EXTRA_TIMEOUT, this.getTimeout()));
 		this.setNumThreads(intent.getIntExtra(EXTRA_NUMTHREADS, this
 				.getNumThreads()));
 	}

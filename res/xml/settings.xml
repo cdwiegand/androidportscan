@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="Prefs">
+		<EditTextPreference android:defaultValue="1000"
+			android:inputType="phone"
+			android:key="connTimeout" android:title="@string/prompt_conn_timeout"
+			android:summary="@string/prompt_conn_timeout_desc">
+		</EditTextPreference>
+	</PreferenceCategory>
+</PreferenceScreen>

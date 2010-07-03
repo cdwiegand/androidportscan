@@ -20,7 +20,7 @@ public class PortScanRequest {
 	private int port = 0;
 	private int timeout = 1000;
 	private Handler handler = null;
-	
+
 	protected static final HttpParams httpParameters = new BasicHttpParams();
 
 	public PortScanRequest() {
@@ -73,7 +73,8 @@ public class PortScanRequest {
 		java.net.Socket s = new Socket();
 
 		if (handler != null)
-			handler.sendMessage(handler.obtainMessage(NetworkScanRequest.MSG_UPDATE, str));
+			handler.sendMessage(handler.obtainMessage(
+					NetworkScanRequest.MSG_UPDATE, str));
 
 		try {
 			java.net.InetSocketAddress remoteAddr = new java.net.InetSocketAddress(
@@ -81,37 +82,41 @@ public class PortScanRequest {
 			s.connect(remoteAddr, timeout);
 			if (s.isConnected())
 				try {
-					java.io.OutputStreamWriter osw = new java.io.OutputStreamWriter(
-							s.getOutputStream());
-					java.io.InputStreamReader isr = new java.io.InputStreamReader(
-							s.getInputStream());
-					java.io.BufferedReader br = new java.io.BufferedReader(isr);
-					try {
-						osw.write("GET /\n\n");
-					} catch (Exception e) {
-					} // ignore if we can't send HTTP request!
 					// now try to read header line (if any)
 					String tmp = "";
-					if (port == 80) {			
+					if (port == 80) {
+						s.close(); // we don't need it anymore
+						s = null;
 						HttpClient wc = new DefaultHttpClient(httpParameters);
-						HttpGet req = new HttpGet("http://" + host + ":" + port + "/");
+						HttpGet req = new HttpGet("http://" + host + ":" + port
+								+ "/");
 						HttpResponse resp = wc.execute(req);
 						tmp = resp.getStatusLine().toString();
 						tmp += " " + resp.getFirstHeader("Server").getValue();
 					} else {
+						java.io.InputStreamReader isr = new java.io.InputStreamReader(
+								s.getInputStream());
+						java.io.BufferedReader br = new java.io.BufferedReader(isr);
 						tmp = br.readLine();
+						br.close();
+						isr.close();
+						s.close();
+						s = null;
 					}
 					str += " OK '" + tmp + "'";
 				} catch (Exception e) {
 					Log.e(LOG_TAG, e.getMessage());
 					str += " OK (cant read)";
+					if (s != null) {
+						s.close();
+						s = null;
+					}
 				}
 			else
 				str += " (disconnected)";
 			if (handler != null)
 				handler.sendMessage(handler.obtainMessage(
 						NetworkScanRequest.MSG_FOUND, str));
-			s.close();
 		} catch (Exception e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
