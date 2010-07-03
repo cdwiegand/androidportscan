@@ -2,9 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="Prefs">
 		<EditTextPreference android:defaultValue="1000"
-			android:inputType="phone"
-			android:key="connTimeout" android:title="@string/prompt_conn_timeout"
+			android:inputType="phone" android:key="connTimeout" android:title="@string/prompt_conn_timeout"
 			android:summary="@string/prompt_conn_timeout_desc">
 		</EditTextPreference>
+		<CheckBoxPreference android:summaryOn="@string/prompt_wifionly_on"
+			android:defaultValue="true" android:key="wifiOnly"
+			android:summaryOff="@string/prompt_wifionly_off" android:title="@string/prompt_wifionly"
+			android:summary="@string/prompt_wifionly_desc"></CheckBoxPreference>
 	</PreferenceCategory>
 </PreferenceScreen>

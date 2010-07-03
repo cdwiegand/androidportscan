@@ -66,6 +66,23 @@ public class ScanConfig extends BaseWindow {
 				Intent intent = new Intent(context, ScanResults.class);
 				NetworkScanRequest nsr = new NetworkScanRequest();
 				try {
+
+					SharedPreferences settings = PreferenceManager
+							.getDefaultSharedPreferences(context);
+					Boolean requireWifi = true;
+					if (settings != null)
+						try {
+							requireWifi = settings.getBoolean("wifiOnly", true);
+						} catch (Exception ee) {
+						}
+
+					if (requireWifi && !NetworkHelper.verifyWifiConnected(context)) {
+						Toast.makeText(context,
+								getAppString(R.string.err_wifi_only),
+								Toast.LENGTH_LONG).show();
+						return;
+					}
+
 					EditText txtBox = (EditText) findViewById(R.id.EditText01);
 					nsr.setNetworkSubnet(txtBox.getText().toString());
 
@@ -79,8 +96,6 @@ public class ScanConfig extends BaseWindow {
 							.parseSubnetMaskString(spinner.getSelectedItem()
 									.toString()));
 
-					SharedPreferences settings = PreferenceManager
-							.getDefaultSharedPreferences(context);
 					if (settings != null)
 						try {
 							String pref = settings.getString("connTimeout",

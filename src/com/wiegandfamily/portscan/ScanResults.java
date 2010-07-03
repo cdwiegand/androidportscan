@@ -30,12 +30,6 @@ public class ScanResults extends BaseWindow {
 		scanner = new NetworkScanRequest(handler);
 		scanner.parseIntent(getIntent());
 
-		if (!NetworkHelper.verifyWifiConnected(this)) {
-			Toast.makeText(this, getAppString(R.string.err_wifi_only),
-					Toast.LENGTH_LONG).show();
-			return;
-		}
-
 		txtBox = (TextView) findViewById(R.id.TextView01);
 		txtBox.setText(getAppString(R.string.scanning) + " "
 				+ scanner.getNetworkSubnet() + "...");
@@ -102,8 +96,8 @@ public class ScanResults extends BaseWindow {
 				txtBox = (TextView) findViewById(R.id.TextView02);
 				txtBox.setText(getAppString(R.string.err_badreq));
 				Toast.makeText(txtBox.getContext(),
-						getAppString(R.string.err_badreq),
-						Toast.LENGTH_SHORT).show();
+						getAppString(R.string.err_badreq), Toast.LENGTH_SHORT)
+						.show();
 				scanner = null; // done!
 				break;
 			}

@@ -8,17 +8,19 @@ import java.util.Enumeration;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public abstract class NetworkHelper {
 	private static final String LOG_TAG = "NetworkHelper";
 	
-	public static boolean verifyWifiConnected(Context con) {
+	public static boolean verifyWifiConnected(Context context) {
 		try {
-			ConnectivityManager cm = (ConnectivityManager) con
-					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			State state = cm.getActiveNetworkInfo().getState();
-			return (state.equals(State.CONNECTED));
+			WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+			return (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED);
 		} catch (Exception ex) {
 			Log.e(LOG_TAG, ex.toString());
 			return false;
