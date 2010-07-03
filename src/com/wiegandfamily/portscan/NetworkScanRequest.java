@@ -135,18 +135,19 @@ public class NetworkScanRequest implements Runnable {
 			Inet4Address addr = (Inet4Address) InetAddress
 					.getByName(this.networkSubnet);
 			// now that we have a standardized form, let's do our math
-			byte[] parts = addr.getAddress(); // 4 parts
-			String networkStr = parts[0] + "." + parts[1] + "." + parts[2];
+			String ip = addr.getHostAddress();
+			String networkStr = ip.substring(0, ip.lastIndexOf('.'));
+			// so now it's 192.168.15
+			int part4 = Integer.parseInt(ip.substring(ip.lastIndexOf('.') + 1));
+			// and that's 67 (for example)
 
 			// now, calculate out our range based on subNetBitMask
-			int subnetSize = (int) Math.pow(2, 32 - this.subnetBitMask); // /24
-																			// would
-																			// be
-																			// 256
-			byte part4 = parts[3]; // grab the last bit
-			int offset = part4 % subnetSize; // .67 would give us 189
+			int subnetSize = (int) Math.pow(2, 32 - this.subnetBitMask);
+			// /24 -> 2^(32-24) -> 256
+			int offset = part4 % subnetSize; // .67 would give us 67
 			int minVal = part4 - offset; // give us .0
-			int maxVal = part4 + offset - 1; // give us .255
+			int maxVal = minVal + subnetSize - 1; // give us .255
+
 			// can't send to network or broadcast addresses!
 			minVal++;
 			maxVal--;
@@ -222,7 +223,7 @@ public class NetworkScanRequest implements Runnable {
 	}
 
 	public static byte parseSubnetMaskString(String value) {
-		return Byte.parseByte(value.substring(1, 2)); // "/24..." becomes "24"
-														// becomes 24
+		return Byte.parseByte(value.substring(1, 3));
+		// "/24..." becomes "24" becomes 24
 	}
 }
