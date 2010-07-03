@@ -72,6 +72,9 @@ public class PortScanRequest {
 
 		java.net.Socket s = new Socket();
 
+		if (handler != null)
+			handler.sendMessage(handler.obtainMessage(NetworkScanRequest.MSG_UPDATE, str));
+
 		try {
 			java.net.InetSocketAddress remoteAddr = new java.net.InetSocketAddress(
 					host, port);

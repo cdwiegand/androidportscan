@@ -4,6 +4,7 @@
     <string name="app_name">Port Scanner</string>
 <string name="ip_mode">IP Mode:</string>
 <string name="port_mode">Ports:</string>
+<string name="conn_timeout">Connection Timeout (in milliseconds):</string>
 <string name="subnet">Subnet (x.y.z format):</string>
 <string name="done_scanning">Done Scanning!</string>
 <string name="less_than_1024">&lt; 1024</string>
@@ -15,7 +16,7 @@
 <string name="results">Results</string>
 <string name="scanning">Scanning:</string>
 <string name="menu_about">About</string>
-<string name="menu_exit">Return</string>
+<string name="menu_exit">Close</string>
 <string name="menu_rotate">Rotate</string>
 <string name="menu_rerun">Re-run</string>
 <string name="wifi_only">Unable to run scan when not connected via Wifi.</string>

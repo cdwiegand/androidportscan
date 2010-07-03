@@ -83,7 +83,7 @@ public class NetworkScanRequest implements Runnable {
 	}
 
 	/** Runs scan against network */
-	public void scanNetwork(String networkSubnet, int portList, int numThreads) {
+	public void scanNetwork() {
 		if (numThreads < 1)
 			numThreads = DEFAULT_THREADS; // default
 
@@ -92,7 +92,7 @@ public class NetworkScanRequest implements Runnable {
 		pool = Executors.newFixedThreadPool(numThreads);
 
 		// fix networkSubnet to be x.y.z format (no fourth quad!)
-		String[] parts = networkSubnet.split(".");
+		String[] parts = networkSubnet.split("\\.");
 		if (parts.length < 3) {
 			if (handler != null)
 				handler.sendMessage(handler.obtainMessage(MSG_BADREQ));
@@ -132,7 +132,7 @@ public class NetworkScanRequest implements Runnable {
 
 	@Override
 	public void run() {
-		scanNetwork(this.networkSubnet, this.portList, this.numThreads);
+		scanNetwork();
 	}
 
 	public void setupIntent(Intent intent) {
