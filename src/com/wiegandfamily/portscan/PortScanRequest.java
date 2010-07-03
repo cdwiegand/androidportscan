@@ -6,6 +6,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.os.Handler;
 import android.util.Log;
@@ -17,8 +20,12 @@ public class PortScanRequest {
 	private int port = 0;
 	private int timeout = 1000;
 	private Handler handler = null;
+	
+	protected static final HttpParams httpParameters = new BasicHttpParams();
 
 	public PortScanRequest() {
+		HttpConnectionParams.setConnectionTimeout(httpParameters, getTimeout());
+		HttpConnectionParams.setSoTimeout(httpParameters, getTimeout());
 	}
 
 	public PortScanRequest(String host, int port, int timeout, Handler handler) {
@@ -82,8 +89,8 @@ public class PortScanRequest {
 					} // ignore if we can't send HTTP request!
 					// now try to read header line (if any)
 					String tmp = "";
-					if (port == 80) {
-						HttpClient wc = new DefaultHttpClient();
+					if (port == 80) {			
+						HttpClient wc = new DefaultHttpClient(httpParameters);
 						HttpGet req = new HttpGet("http://" + host + ":" + port + "/");
 						HttpResponse resp = wc.execute(req);
 						tmp = resp.getStatusLine().toString();
@@ -100,7 +107,7 @@ public class PortScanRequest {
 				str += " (disconnected)";
 			if (handler != null)
 				handler.sendMessage(handler.obtainMessage(
-						NetworkScanner.MSG_FOUND, str));
+						NetworkScanRequest.MSG_FOUND, str));
 			s.close();
 		} catch (Exception e) {
 			Log.e(LOG_TAG, e.getMessage());

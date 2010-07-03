@@ -7,11 +7,7 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/hello" android:textSize="20px"/>
-<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ip_mode"></TextView>
-<Spinner android:id="@+id/Spinner01" android:layout_height="wrap_content" android:layout_width="fill_parent"></Spinner>
 <TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ip"></TextView>
 <EditText android:id="@+id/EditText01" android:layout_height="wrap_content" android:layout_width="fill_parent"></EditText>
-<TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/port_mode"></TextView>
-<Spinner android:id="@+id/Spinner02" android:layout_height="wrap_content" android:layout_width="fill_parent"></Spinner>
 <Button android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/scan_now" android:layout_gravity="center"></Button>
 </LinearLayout>

@@ -36,11 +36,11 @@ public class HostScanRequest implements Runnable {
 
 	public String getPostListString() {
 		switch (getPortList()) {
-		case NetworkScanner.PORTLIST_ALL:
+		case NetworkScanRequest.PORTLIST_ALL:
 			return "All ports";
-		case NetworkScanner.PORTLIST_COMMON:
+		case NetworkScanRequest.PORTLIST_COMMON:
 			return "Common ports";
-		case NetworkScanner.PORTLIST_LESSTHAN1024:
+		case NetworkScanRequest.PORTLIST_LESSTHAN1024:
 			return "Ports < 1024";
 		default:
 			return "Unknown";
@@ -72,15 +72,15 @@ public class HostScanRequest implements Runnable {
 	public void scanHost() {		
 		int[] ports = null;
 		switch (portList) {
-		case NetworkScanner.PORTLIST_ALL:
+		case NetworkScanRequest.PORTLIST_ALL:
 			ports = new int[65535];
 			for (int idx = 0; idx < 65535; idx++)
 				ports[idx] = idx;
 			break;
-		case NetworkScanner.PORTLIST_COMMON:
-			ports = NetworkScanner.commonPorts;
+		case NetworkScanRequest.PORTLIST_COMMON:
+			ports = NetworkScanRequest.commonPorts;
 			break;
-		case NetworkScanner.PORTLIST_LESSTHAN1024:
+		case NetworkScanRequest.PORTLIST_LESSTHAN1024:
 			ports = new int[1024];
 			for (int idx = 0; idx < 1024; idx++)
 				ports[idx] = idx;
@@ -88,7 +88,7 @@ public class HostScanRequest implements Runnable {
 		}
 
 		if (handler != null)
-			handler.sendMessage(handler.obtainMessage(NetworkScanner.MSG_UPDATE, host));
+			handler.sendMessage(handler.obtainMessage(NetworkScanRequest.MSG_UPDATE, host));
 		
 		for (int idx = 0; idx < ports.length; idx++) {
 			int port = ports[idx];
