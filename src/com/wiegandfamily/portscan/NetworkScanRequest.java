@@ -31,8 +31,8 @@ public class NetworkScanRequest implements Runnable {
 	public static final String EXTRA_NUMTHREADS = "EXTRA_NUMTHREADS";
 
 	public static final int PORTLIST_COMMON = 1;
-	public static final int PORTLIST_ALL = 2;
-	public static final int PORTLIST_LESSTHAN1024 = 3;
+	public static final int PORTLIST_LESSTHAN1024 = 2;
+	public static final int PORTLIST_ALL = 3;
 
 	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143 };
 	// { 21, 22, 23, 25, 80, 110, 143, 389, 443, 445, 465, 587, 993, 995 };
