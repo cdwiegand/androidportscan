@@ -17,7 +17,8 @@ import android.util.Log;
 public class NetworkScanRequest implements Runnable {
 	private static final String LOG_TAG = "NetworkScanRequest";
 
-	private static final int DEFAULT_THREADS = 8;
+	private static final int DEFAULT_THREADS = 32;
+	private static final int DEFAULT_TIMEOUT = 500;
 
 	public static final int MSG_DONE = 1;
 	public static final int MSG_UPDATE = 2;
@@ -34,7 +35,7 @@ public class NetworkScanRequest implements Runnable {
 	public static final int PORTLIST_LESSTHAN1024 = 2;
 	public static final int PORTLIST_ALL = 3;
 
-	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143 };
+	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143, 443 };
 	// { 21, 22, 23, 25, 80, 110, 143, 389, 443, 445, 465, 587, 993, 995 };
 
 	private ExecutorService pool = null;
@@ -43,8 +44,8 @@ public class NetworkScanRequest implements Runnable {
 	protected int portList = PORTLIST_COMMON;
 	protected String networkSubnet = "192.168.15.0";
 	protected byte subnetBitMask = 24; // "/24"
-	protected int timeout = 1000;
-	protected int numThreads = 4;
+	protected int timeout = 0;
+	protected int numThreads = 0;
 
 	public NetworkScanRequest() {
 	}
@@ -102,6 +103,8 @@ public class NetworkScanRequest implements Runnable {
 	public void scanNetwork() {
 		if (numThreads < 1)
 			numThreads = DEFAULT_THREADS; // default
+		if (timeout < 1) 
+			timeout = DEFAULT_TIMEOUT;
 
 		if (pool != null)
 			killAll();

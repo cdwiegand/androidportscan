@@ -18,7 +18,7 @@ public class PortScanRequest {
 
 	private String host = "";
 	private int port = 0;
-	private int timeout = 1000;
+	private int timeout = 0;
 	private Handler handler = null;
 
 	protected static final HttpParams httpParameters = new BasicHttpParams();

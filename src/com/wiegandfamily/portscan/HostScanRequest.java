@@ -8,7 +8,7 @@ public class HostScanRequest implements Runnable {
 	
 	private String host = "";
 	private int portList = 0;
-	private int timeout = 1000;
+	private int timeout = 0;
 	private Handler handler = null;
 
 	public HostScanRequest() {
