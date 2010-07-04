@@ -84,11 +84,11 @@ public class PortScanRequest {
 				try {
 					// now try to read header line (if any)
 					String tmp = "";
-					if (port == 80) {
+					if (port == 80 || port == 443) {
 						s.close(); // we don't need it anymore
 						s = null;
 						HttpClient wc = new DefaultHttpClient(httpParameters);
-						HttpGet req = new HttpGet("http://" + host + ":" + port
+						HttpGet req = new HttpGet((port == 443 ? "https" : "http") + "://" + host + ":" + port
 								+ "/");
 						HttpResponse resp = wc.execute(req);
 						tmp = resp.getStatusLine().toString();
