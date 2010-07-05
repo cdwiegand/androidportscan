@@ -12,9 +12,11 @@ public class BaseWindow extends Activity {
 	private static final String LOG_TAG = "BaseWindow";
 
 	protected static final int MENU_ABOUT = 4;
+	protected static final int MENU_EXIT = 5;
 	protected static final int MENU_RERUN = 6;
 	protected static final int MENU_PREFS = 7;
-	protected static final int MENU_EXIT = 5;
+	protected static final int MENU_EMAIL = 8;
+	protected static final int MENU_STOP = 9;
 
 	protected void showAbout() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);

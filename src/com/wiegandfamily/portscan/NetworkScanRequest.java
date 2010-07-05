@@ -18,7 +18,7 @@ public class NetworkScanRequest implements Runnable {
 	private static final String LOG_TAG = "NetworkScanRequest";
 
 	private static NetworkScanRequest _instance = null;
-	
+
 	private static String results = "";
 
 	private static final int DEFAULT_THREADS = 32;
@@ -83,7 +83,7 @@ public class NetworkScanRequest implements Runnable {
 	public Handler getHandler() {
 		return this.handler;
 	}
-	
+
 	public String getResults() {
 		return results;
 	}
@@ -144,7 +144,7 @@ public class NetworkScanRequest implements Runnable {
 			Log.e(LOG_TAG, e.getMessage());
 		}
 
-		sendUpdate(MSG_DONE,"");
+		sendUpdate(MSG_DONE, "");
 		pool = null;
 	}
 
@@ -184,7 +184,7 @@ public class NetworkScanRequest implements Runnable {
 	}
 
 	public void sendUpdate(int updateType, String info) {
-		if (updateType == MSG_FOUND) 
+		if (updateType == MSG_FOUND)
 			results += info + "\n";
 		if (handler != null)
 			handler.sendMessage(handler.obtainMessage(updateType, info));
@@ -257,5 +257,9 @@ public class NetworkScanRequest implements Runnable {
 	public static byte parseSubnetMaskString(String value) {
 		return Byte.parseByte(value.substring(1, 3));
 		// "/24..." becomes "24" becomes 24
+	}
+
+	public String getSubnetMaskString() {
+		return "/" + String.valueOf(this.subnetBitMask);
 	}
 }

@@ -28,6 +28,8 @@
 <string name="menu_about">About</string>
 <string name="menu_exit">Close</string>
 <string name="menu_prefs">Prefs</string>
+<string name="menu_stop">Stop</string>
+<string name="menu_email">Email</string>
 <string name="menu_rotate">Rotate</string>
 <string name="menu_rerun">Re-run</string>
 </resources>

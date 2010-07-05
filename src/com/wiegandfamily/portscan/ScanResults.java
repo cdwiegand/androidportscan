@@ -1,5 +1,6 @@
 package com.wiegandfamily.portscan;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +36,7 @@ public class ScanResults extends BaseWindow {
 		// pull existing results (if any)
 		txtBox = (TextView) findViewById(R.id.TextView02);
 		txtBox.setText(scanner.getResults());
-		
+
 		if (!scanner.isRunning()) {
 			scanner.parseIntent(getIntent());
 
@@ -50,11 +51,13 @@ public class ScanResults extends BaseWindow {
 
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
-				R.drawable.ic_menu_info_details);
+		// menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
+		// R.drawable.ic_menu_info_details);
+		menu.add(0, MENU_EMAIL, 0, R.string.menu_email).setIcon(
+				R.drawable.ic_menu_send);
 		menu.add(0, MENU_RERUN, 0, R.string.menu_rerun).setIcon(
 				R.drawable.ic_menu_refresh);
-		menu.add(0, MENU_EXIT, 1, R.string.menu_exit).setIcon(
+		menu.add(0, MENU_STOP, 1, R.string.menu_stop).setIcon(
 				R.drawable.ic_menu_close_clear_cancel);
 		return true;
 	}
@@ -65,16 +68,30 @@ public class ScanResults extends BaseWindow {
 		case MENU_ABOUT:
 			showAbout();
 			return true;
+		case MENU_EMAIL:
+			sendResultsViaEmail();
+			return true;
 		case MENU_RERUN:
 			run(true); // restart if already running
 			return true;
-		case MENU_EXIT:
+		case MENU_STOP:
 			if (scanner != null)
-				scanner.killAll();
-			this.finish();
+				try {
+					scanner.killAll();
+				} catch (Exception e) {
+				}
 			return true;
 		}
 		return false;
+	}
+
+	protected void sendResultsViaEmail() {
+		Intent email = new Intent(Intent.ACTION_SEND);
+		email.setType("text/plain");
+		email.putExtra(Intent.EXTRA_SUBJECT, "Network scan results for "
+				+ scanner.getNetworkSubnet() + scanner.getSubnetMaskString());
+		email.putExtra(Intent.EXTRA_TEXT, scanner.getResults());
+		startActivity(Intent.createChooser(email, "Send mail via..."));
 	}
 
 	/** Handler to get results/updates from scanning thread */
