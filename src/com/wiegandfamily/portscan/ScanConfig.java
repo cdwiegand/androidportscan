@@ -69,8 +69,10 @@ public class ScanConfig extends BaseWindow {
 	// Scan Now button click function
 	public void onClick() {
 		Intent intent = new Intent(this, ScanResults.class);
-		NetworkScanRequest nsr = new NetworkScanRequest();
+		NetworkScanRequest nsr = NetworkScanRequest.getInstance();
 		try {
+			if (nsr.isRunning())
+				nsr.killAll(); // stop doing all work!
 
 			SharedPreferences settings = PreferenceManager
 					.getDefaultSharedPreferences(this);
@@ -95,10 +97,10 @@ public class ScanConfig extends BaseWindow {
 					spinner.getSelectedItem().toString()));
 
 			spinner = (Spinner) findViewById(R.id.Spinner04);
-			nsr
-					.setSubnetBitMask(NetworkScanRequest
-							.parseSubnetMaskString(spinner.getSelectedItem()
-									.toString()));
+			String selectedSNM = spinner.getSelectedItem().toString();
+			byte snmByte = NetworkScanRequest
+					.parseSubnetMaskString(selectedSNM);
+			nsr.setSubnetBitMask(snmByte);
 
 			if (settings != null)
 				try {

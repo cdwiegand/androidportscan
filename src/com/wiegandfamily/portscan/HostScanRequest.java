@@ -1,7 +1,5 @@
 package com.wiegandfamily.portscan;
 
-import android.os.Handler;
-
 public class HostScanRequest implements Runnable {
 	@SuppressWarnings("unused")
 	private static final String LOG_TAG = "HostScanRequest";
@@ -9,17 +7,17 @@ public class HostScanRequest implements Runnable {
 	private String host = "";
 	private int portList = 0;
 	private int timeout = 0;
-	private Handler handler = null;
+	private NetworkScanRequest request = null;
 
 	public HostScanRequest() {
 	}
 
-	public HostScanRequest(String host, int portList, int timeout, Handler handler) {
+	public HostScanRequest(String host, int portList, int timeout, NetworkScanRequest request) {
 		this();
 		setHost(host);
 		setPortList(portList);
 		setTimeout(timeout);
-		this.handler = handler;
+		this.request = request;
 	}
 
 	public String getHost() {
@@ -87,12 +85,11 @@ public class HostScanRequest implements Runnable {
 			break;
 		}
 
-		if (handler != null)
-			handler.sendMessage(handler.obtainMessage(NetworkScanRequest.MSG_UPDATE, host));
+		request.sendUpdate(NetworkScanRequest.MSG_UPDATE, host);
 		
 		for (int idx = 0; idx < ports.length; idx++) {
 			int port = ports[idx];
-			PortScanRequest req = new PortScanRequest(host, port, timeout, handler);
+			PortScanRequest req = new PortScanRequest(host, port, timeout, request);
 			req.scanPort();
 		}
 	}

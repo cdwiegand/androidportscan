@@ -17,6 +17,10 @@ import android.util.Log;
 public class NetworkScanRequest implements Runnable {
 	private static final String LOG_TAG = "NetworkScanRequest";
 
+	private static NetworkScanRequest _instance = null;
+	
+	private static String results = "";
+
 	private static final int DEFAULT_THREADS = 32;
 	private static final int DEFAULT_TIMEOUT = 500;
 
@@ -35,24 +39,25 @@ public class NetworkScanRequest implements Runnable {
 	public static final int PORTLIST_LESSTHAN1024 = 2;
 	public static final int PORTLIST_ALL = 3;
 
-	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143, 443 };
+	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143,
+			443 };
 	// { 21, 22, 23, 25, 80, 110, 143, 389, 443, 445, 465, 587, 993, 995 };
 
 	private ExecutorService pool = null;
-	private boolean poolRunning = false;
-	protected Handler handler = null;
+	private Handler handler = null;
 	protected int portList = PORTLIST_COMMON;
 	protected String networkSubnet = "192.168.15.0";
 	protected byte subnetBitMask = 24; // "/24"
 	protected int timeout = 0;
 	protected int numThreads = 0;
 
-	public NetworkScanRequest() {
+	private NetworkScanRequest() {
 	}
 
-	public NetworkScanRequest(Handler handler) {
-		this();
-		this.handler = handler;
+	public static NetworkScanRequest getInstance() {
+		if (_instance == null)
+			_instance = new NetworkScanRequest();
+		return _instance;
 	}
 
 	public int getPortList() {
@@ -75,8 +80,16 @@ public class NetworkScanRequest implements Runnable {
 		return this.subnetBitMask;
 	}
 
+	public Handler getHandler() {
+		return this.handler;
+	}
+	
+	public String getResults() {
+		return results;
+	}
+
 	public boolean isRunning() {
-		return poolRunning;
+		return pool != null;
 	}
 
 	public void setTimeout(int timeout) {
@@ -99,26 +112,30 @@ public class NetworkScanRequest implements Runnable {
 		this.subnetBitMask = subnetBitMask;
 	}
 
+	public void setHandler(Handler handler) {
+		this.handler = handler;
+	}
+
 	/** Runs scan against network */
 	public void scanNetwork() {
 		if (numThreads < 1)
 			numThreads = DEFAULT_THREADS; // default
-		if (timeout < 1) 
+		if (timeout < 1)
 			timeout = DEFAULT_TIMEOUT;
-
-		if (pool != null)
-			killAll();
-		pool = Executors.newFixedThreadPool(numThreads);
 
 		List<String> hosts = getHostsForSubnet();
 
-		poolRunning = true;
+		if (isRunning())
+			killAll();
+		pool = Executors.newFixedThreadPool(numThreads);
+
 		for (int i = 0; i < hosts.size(); i++) {
 			String host = hosts.get(i);
 			HostScanRequest req = new HostScanRequest(host, portList, timeout,
-					handler);
+					this);
 			pool.execute(req);
 		}
+		pool.shutdown(); // no new tasks now
 
 		// now wait for all threads to finish
 		try {
@@ -127,9 +144,8 @@ public class NetworkScanRequest implements Runnable {
 			Log.e(LOG_TAG, e.getMessage());
 		}
 
-		if (handler != null)
-			handler.sendMessage(handler.obtainMessage(MSG_DONE));
-		poolRunning = false;
+		sendUpdate(MSG_DONE,"");
+		pool = null;
 	}
 
 	private List<String> getHostsForSubnet() {
@@ -167,6 +183,13 @@ public class NetworkScanRequest implements Runnable {
 		}
 	}
 
+	public void sendUpdate(int updateType, String info) {
+		if (updateType == MSG_FOUND) 
+			results += info + "\n";
+		if (handler != null)
+			handler.sendMessage(handler.obtainMessage(updateType, info));
+	}
+
 	public void killAll() {
 		if (pool != null)
 			try {
@@ -174,7 +197,7 @@ public class NetworkScanRequest implements Runnable {
 			} catch (Exception ex) {
 				// ignore! best attempt to kill threads
 			}
-		poolRunning = false;
+		pool = null;
 	}
 
 	@Override

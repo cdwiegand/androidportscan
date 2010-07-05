@@ -10,7 +10,6 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-import android.os.Handler;
 import android.util.Log;
 
 public class PortScanRequest {
@@ -19,7 +18,7 @@ public class PortScanRequest {
 	private String host = "";
 	private int port = 0;
 	private int timeout = 0;
-	private Handler handler = null;
+	private NetworkScanRequest request = null;
 
 	protected static final HttpParams httpParameters = new BasicHttpParams();
 
@@ -28,12 +27,13 @@ public class PortScanRequest {
 		HttpConnectionParams.setSoTimeout(httpParameters, getTimeout());
 	}
 
-	public PortScanRequest(String host, int port, int timeout, Handler handler) {
+	public PortScanRequest(String host, int port, int timeout,
+			NetworkScanRequest request) {
 		this();
 		setHost(host);
 		setPort(port);
 		setTimeout(timeout);
-		this.handler = handler;
+		this.request = request;
 	}
 
 	public String getHost() {
@@ -72,9 +72,7 @@ public class PortScanRequest {
 
 		java.net.Socket s = new Socket();
 
-		if (handler != null)
-			handler.sendMessage(handler.obtainMessage(
-					NetworkScanRequest.MSG_UPDATE, str));
+		request.sendUpdate(NetworkScanRequest.MSG_UPDATE, str);
 
 		try {
 			java.net.InetSocketAddress remoteAddr = new java.net.InetSocketAddress(
@@ -88,15 +86,17 @@ public class PortScanRequest {
 						s.close(); // we don't need it anymore
 						s = null;
 						HttpClient wc = new DefaultHttpClient(httpParameters);
-						HttpGet req = new HttpGet((port == 443 ? "https" : "http") + "://" + host + ":" + port
-								+ "/");
+						HttpGet req = new HttpGet((port == 443 ? "https"
+								: "http")
+								+ "://" + host + ":" + port + "/");
 						HttpResponse resp = wc.execute(req);
 						tmp = resp.getStatusLine().toString();
 						tmp += " " + resp.getFirstHeader("Server").getValue();
 					} else {
 						java.io.InputStreamReader isr = new java.io.InputStreamReader(
 								s.getInputStream());
-						java.io.BufferedReader br = new java.io.BufferedReader(isr);
+						java.io.BufferedReader br = new java.io.BufferedReader(
+								isr);
 						tmp = br.readLine();
 						br.close();
 						isr.close();
@@ -114,9 +114,7 @@ public class PortScanRequest {
 				}
 			else
 				str += " (disconnected)";
-			if (handler != null)
-				handler.sendMessage(handler.obtainMessage(
-						NetworkScanRequest.MSG_FOUND, str));
+			request.sendUpdate(NetworkScanRequest.MSG_FOUND, str);
 		} catch (Exception e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}

@@ -21,6 +21,7 @@
 <string name="scanning">Scanning:</string>
 <string name="err_badreq">Bad Request - Please verify your request.</string>
 <string name="err_wifi_only">Unable to run scan when not connected via Wifi.</string>
+<string name="err_invalid_portlist">Invalid port list.</string>
 <string name="opt_ports_less_than_1024">Ports &lt; 1024</string>
 <string name="opt_ports_common">Common Ports</string>
 <string name="opt_ports_all">All Ports</string>

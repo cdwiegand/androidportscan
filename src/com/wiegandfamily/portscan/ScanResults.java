@@ -20,22 +20,32 @@ public class ScanResults extends BaseWindow {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.results);
 
-		run();
+		run(false);
 	}
 
-	protected void run() {
+	protected void run(boolean restart) {
 		TextView txtBox = (TextView) findViewById(R.id.TextView02);
 		txtBox.setText("");
 
-		scanner = new NetworkScanRequest(handler);
-		scanner.parseIntent(getIntent());
+		scanner = NetworkScanRequest.getInstance();
+		scanner.setHandler(handler);
+		if (restart && scanner.isRunning())
+			scanner.killAll();
 
-		txtBox = (TextView) findViewById(R.id.TextView01);
-		txtBox.setText(getAppString(R.string.scanning) + " "
-				+ scanner.getNetworkSubnet() + "...");
+		// pull existing results (if any)
+		txtBox = (TextView) findViewById(R.id.TextView02);
+		txtBox.setText(scanner.getResults());
+		
+		if (!scanner.isRunning()) {
+			scanner.parseIntent(getIntent());
 
-		Thread thread = new Thread(scanner);
-		thread.start();
+			txtBox = (TextView) findViewById(R.id.TextView01);
+			txtBox.setText(getAppString(R.string.scanning) + " "
+					+ scanner.getNetworkSubnet() + "...");
+
+			Thread thread = new Thread(scanner);
+			thread.start();
+		}
 	}
 
 	/* Creates the menu items */
@@ -56,7 +66,7 @@ public class ScanResults extends BaseWindow {
 			showAbout();
 			return true;
 		case MENU_RERUN:
-			run();
+			run(true); // restart if already running
 			return true;
 		case MENU_EXIT:
 			if (scanner != null)
@@ -89,8 +99,7 @@ public class ScanResults extends BaseWindow {
 				break;
 			case NetworkScanRequest.MSG_FOUND:
 				txtBox = (TextView) findViewById(R.id.TextView02);
-				txtBox.setText(txtBox.getText().toString() + "\n"
-						+ msg.obj.toString());
+				txtBox.setText(scanner.getResults());
 				break;
 			case NetworkScanRequest.MSG_BADREQ:
 				txtBox = (TextView) findViewById(R.id.TextView02);
