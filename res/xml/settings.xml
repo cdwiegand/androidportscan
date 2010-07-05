@@ -9,5 +9,9 @@
 			android:defaultValue="true" android:key="wifiOnly"
 			android:summaryOff="@string/prompt_wifionly_off" android:title="@string/prompt_wifionly"
 			android:summary="@string/prompt_wifionly_desc"></CheckBoxPreference>
+		<EditTextPreference android:defaultValue="32"
+			android:inputType="phone" android:key="numThreads" android:title="@string/prompt_num_threads"
+			android:summary="@string/prompt_num_threads_desc">
+		</EditTextPreference>
 	</PreferenceCategory>
 </PreferenceScreen>

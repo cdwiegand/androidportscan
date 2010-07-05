@@ -2,7 +2,6 @@ package com.wiegandfamily.portscan;
 
 import java.util.List;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -61,62 +60,63 @@ public class ScanConfig extends BaseWindow {
 		Button btn = (Button) findViewById(R.id.Button01);
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View arg0) {
-				Context context = getApplicationContext();
-				Intent intent = new Intent(context, ScanResults.class);
-				NetworkScanRequest nsr = new NetworkScanRequest();
+			public void onClick(View v) {
+				ScanConfig.this.onClick();
+			}
+		});
+	}
+
+	// Scan Now button click function
+	public void onClick() {
+		Intent intent = new Intent(this, ScanResults.class);
+		NetworkScanRequest nsr = new NetworkScanRequest();
+		try {
+
+			SharedPreferences settings = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			Boolean requireWifi = true;
+			if (settings != null)
 				try {
+					requireWifi = settings.getBoolean("wifiOnly", true);
+				} catch (Exception ee) {
+				}
 
-					SharedPreferences settings = PreferenceManager
-							.getDefaultSharedPreferences(context);
-					Boolean requireWifi = true;
-					if (settings != null)
-						try {
-							requireWifi = settings.getBoolean("wifiOnly", true);
-						} catch (Exception ee) {
-						}
+			if (requireWifi && !NetworkHelper.verifyWifiConnected(this)) {
+				Toast.makeText(this, getAppString(R.string.err_wifi_only),
+						Toast.LENGTH_LONG).show();
+				return;
+			}
 
-					if (requireWifi && !NetworkHelper.verifyWifiConnected(context)) {
-						Toast.makeText(context,
-								getAppString(R.string.err_wifi_only),
-								Toast.LENGTH_LONG).show();
-						return;
-					}
+			EditText txtBox = (EditText) findViewById(R.id.EditText01);
+			nsr.setNetworkSubnet(txtBox.getText().toString());
 
-					EditText txtBox = (EditText) findViewById(R.id.EditText01);
-					nsr.setNetworkSubnet(txtBox.getText().toString());
+			Spinner spinner = (Spinner) findViewById(R.id.Spinner03);
+			nsr.setPortList(NetworkScanRequest.parsePortListString(this,
+					spinner.getSelectedItem().toString()));
 
-					Spinner spinner = (Spinner) findViewById(R.id.Spinner03);
-					nsr.setPortList(NetworkScanRequest.parsePortListString(
-							getApplicationContext(), spinner.getSelectedItem()
-									.toString()));
-
-					spinner = (Spinner) findViewById(R.id.Spinner04);
-					nsr.setSubnetBitMask(NetworkScanRequest
+			spinner = (Spinner) findViewById(R.id.Spinner04);
+			nsr
+					.setSubnetBitMask(NetworkScanRequest
 							.parseSubnetMaskString(spinner.getSelectedItem()
 									.toString()));
 
-					if (settings != null)
-						try {
-							String pref = settings.getString("connTimeout",
-									"1000");
-							int timeout = Integer.parseInt(pref);
-							nsr.setTimeout(timeout);
-						} catch (Exception ee) {
-							nsr.setTimeout(1000);
-						}
-					else
-						nsr.setTimeout(1000);
-
-					nsr.setupIntent(intent);
-					startActivity(intent);
-				} catch (Exception e) {
-					Toast.makeText(getApplicationContext(),
-							getAppString(R.string.err_badreq),
-							Toast.LENGTH_SHORT).show();
+			if (settings != null)
+				try {
+					String pref = settings.getString("connTimeout", "1000");
+					int timeout = Integer.parseInt(pref);
+					nsr.setTimeout(timeout);
+				} catch (Exception ee) {
+					nsr.setTimeout(1000);
 				}
-			}
-		});
+			else
+				nsr.setTimeout(1000);
+
+			nsr.setupIntent(intent);
+			startActivity(intent);
+		} catch (Exception e) {
+			Toast.makeText(this, getAppString(R.string.err_badreq),
+					Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	/* Creates the menu items */
