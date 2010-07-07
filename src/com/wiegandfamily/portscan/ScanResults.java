@@ -24,17 +24,18 @@ public class ScanResults extends BaseWindow {
 		run(false);
 	}
 
-	protected void run(boolean restart) {
-		TextView txtBox = (TextView) findViewById(R.id.TextView02);
-		txtBox.setText("");
+	protected TextView getTextView() {
+		return (TextView) findViewById(R.id.TextView02);
+	}
 
+	protected void run(boolean restart) {
 		scanner = NetworkScanRequest.getInstance();
 		scanner.setHandler(handler);
 		if (restart && scanner.isRunning())
 			scanner.killAll();
 
 		// pull existing results (if any)
-		txtBox = (TextView) findViewById(R.id.TextView02);
+		TextView txtBox = getTextView();
 		txtBox.setText(scanner.getResults());
 
 		if (!scanner.isRunning()) {
@@ -86,11 +87,15 @@ public class ScanResults extends BaseWindow {
 	}
 
 	protected void sendResultsViaEmail() {
+		TextView txtBox = getTextView();
 		Intent email = new Intent(Intent.ACTION_SEND);
 		email.setType("text/plain");
 		email.putExtra(Intent.EXTRA_SUBJECT, "Network scan results for "
 				+ scanner.getNetworkSubnet() + scanner.getSubnetMaskString());
-		email.putExtra(Intent.EXTRA_TEXT, scanner.getResults());
+		if (scanner != null)
+			email.putExtra(Intent.EXTRA_TEXT, scanner.getResults());
+		else
+			email.putExtra(Intent.EXTRA_TEXT, txtBox.getText());
 		startActivity(Intent.createChooser(email, "Send mail via..."));
 	}
 
@@ -106,7 +111,6 @@ public class ScanResults extends BaseWindow {
 				Toast.makeText(txtBox.getContext(),
 						getAppString(R.string.done_scanning),
 						Toast.LENGTH_SHORT).show();
-				scanner = null; // done!
 				break;
 			case NetworkScanRequest.MSG_UPDATE:
 				txtBox = (TextView) findViewById(R.id.TextView01);
@@ -124,7 +128,11 @@ public class ScanResults extends BaseWindow {
 				Toast.makeText(txtBox.getContext(),
 						getAppString(R.string.err_badreq), Toast.LENGTH_SHORT)
 						.show();
-				scanner = null; // done!
+				if (scanner != null)
+					try {
+						scanner.killAll();
+					} catch (Exception e) {
+					}
 				break;
 			}
 		}

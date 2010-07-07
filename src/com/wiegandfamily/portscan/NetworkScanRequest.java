@@ -127,6 +127,7 @@ public class NetworkScanRequest implements Runnable {
 
 		if (isRunning())
 			killAll();
+		results = ""; // reset them
 		pool = Executors.newFixedThreadPool(numThreads);
 
 		for (int i = 0; i < hosts.size(); i++) {
