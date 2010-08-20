@@ -39,8 +39,8 @@ public class NetworkScanRequest implements Runnable {
 	public static final int PORTLIST_LESSTHAN1024 = 2;
 	public static final int PORTLIST_ALL = 3;
 
-	protected static final int[] commonPorts = { 21, 22, 23, 25, 80, 110, 143,
-			443 };
+	protected static final int[] commonPorts = { 21, 22, 23, 25, 53, 80, 110, 119, 143,
+			161, 389, 443, 445, 1433, 1521, 3306, 5900, 8080, 1604, 3389 };
 	// { 21, 22, 23, 25, 80, 110, 143, 389, 443, 445, 465, 587, 993, 995 };
 
 	private ExecutorService pool = null;

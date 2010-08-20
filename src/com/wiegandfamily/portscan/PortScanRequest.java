@@ -92,6 +92,9 @@ public class PortScanRequest {
 						HttpResponse resp = wc.execute(req);
 						tmp = resp.getStatusLine().toString();
 						tmp += " " + resp.getFirstHeader("Server").getValue();
+					} else if (port == 137 || port == 138 || port == 139
+							|| port == 445) {
+						tmp = "(SMB/Windows Port)";
 					} else {
 						java.io.InputStreamReader isr = new java.io.InputStreamReader(
 								s.getInputStream());

@@ -1,6 +1,9 @@
 package com.wiegandfamily.portscan;
 
+import java.util.HashMap;
 import java.util.List;
+
+import com.mixpanel.android.mpmetrics.MPMetrics;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,10 +18,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.util.DisplayMetrics;
 
 public class ScanConfig extends BaseWindow {
 	@SuppressWarnings("unused")
 	private static final String LOG_TAG = "ScanConfig";
+	private static final String MIXPANEL_TOKEN = "676d415a50a79f2fe914cb0f18f42e40";
+	private MPMetrics mMPMetrics = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -26,11 +32,31 @@ public class ScanConfig extends BaseWindow {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		// to cache info
+		PhoneHelper.getCarrierName(this);
+		PhoneHelper.getAppVersion(this);
+		PhoneHelper.getDisplayMetrics(this);
+		try {
+			if (mMPMetrics == null)
+				mMPMetrics = new MPMetrics(this, MIXPANEL_TOKEN);
+		} catch (Exception e) {
+		}
+
 		// make sure prefs are setup
 		android.preference.PreferenceManager.setDefaultValues(this,
 				R.xml.settings, false);
 
 		setup();
+	}
+
+	@Override
+	protected void onDestroy() {
+		try {
+			mMPMetrics.flush();
+		} catch (Exception ee) {
+			// Toast.makeText(this, ee.getMessage(), Toast.LENGTH_LONG).show();
+		}
+		super.onDestroy();
 	}
 
 	protected void setup() {
@@ -66,8 +92,37 @@ public class ScanConfig extends BaseWindow {
 		});
 	}
 
+	private void track() {
+		HashMap<String, String> properties = new HashMap<String, String>();
+		try {
+			properties.put("carrier", coalesce(
+					PhoneHelper.getCarrierName(null), "Unknown"));
+			properties.put("appVersion", coalesce(PhoneHelper
+					.getAppVersion(null), "Unknown"));
+			properties.put("androidVer", coalesce(PhoneHelper
+					.getAndroidRelease(), "Unknown"));
+			properties
+					.put("model", coalesce(PhoneHelper.getModel(), "Unknown"));
+			DisplayMetrics dm = PhoneHelper.getDisplayMetrics(null);
+			properties.put("display", coalesce("" + dm.widthPixels, "Unknown")
+					+ "x" + coalesce("" + dm.heightPixels, "Unknown"));
+		} catch (Exception e) {
+		}
+		// mMPMetrics.enableTestMode(); // just for testing
+		mMPMetrics.event("ScanStarted", properties);
+		mMPMetrics.flush();
+	}
+
+	private String coalesce(String value, String defValue) {
+		return (value == null ? defValue : value);
+	}
+
 	// Scan Now button click function
 	public void onClick() {
+		try {
+			track();
+		} catch (Exception e) {
+		}
 		Intent intent = new Intent(this, ScanResults.class);
 		NetworkScanRequest nsr = NetworkScanRequest.getInstance();
 		try {
