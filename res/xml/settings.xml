@@ -13,5 +13,9 @@
 			android:inputType="phone" android:key="numThreads" android:title="@string/prompt_num_threads"
 			android:summary="@string/prompt_num_threads_desc">
 		</EditTextPreference>
+		<EditTextPreference
+			android:defaultValue="21, 22, 23, 25, 53, 80, 110, 119, 143, 161, 389, 443, 445, 1433, 1521, 3306, 5900, 8080, 1604, 3389"
+			android:key="defaultPortList" android:title="@string/prompt_defaultports">
+		</EditTextPreference>
 	</PreferenceCategory>
 </PreferenceScreen>

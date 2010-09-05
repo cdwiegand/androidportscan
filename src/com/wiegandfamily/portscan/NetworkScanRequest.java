@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
@@ -35,17 +34,9 @@ public class NetworkScanRequest implements Runnable {
 	public static final String EXTRA_SUBNETBITMASK = "EXTRA_SUBNETBITMASK";
 	public static final String EXTRA_NUMTHREADS = "EXTRA_NUMTHREADS";
 
-	public static final int PORTLIST_COMMON = 1;
-	public static final int PORTLIST_LESSTHAN1024 = 2;
-	public static final int PORTLIST_ALL = 3;
-
-	protected static final int[] commonPorts = { 21, 22, 23, 25, 53, 80, 110, 119, 143,
-			161, 389, 443, 445, 1433, 1521, 3306, 5900, 8080, 1604, 3389 };
-	// { 21, 22, 23, 25, 80, 110, 143, 389, 443, 445, 465, 587, 993, 995 };
-
 	private ExecutorService pool = null;
 	private Handler handler = null;
-	protected int portList = PORTLIST_COMMON;
+	protected int[] portList = {};
 	protected String networkSubnet = "192.168.15.0";
 	protected byte subnetBitMask = 24; // "/24"
 	protected int timeout = 0;
@@ -60,7 +51,7 @@ public class NetworkScanRequest implements Runnable {
 		return _instance;
 	}
 
-	public int getPortList() {
+	public int[] getPortList() {
 		return this.portList;
 	}
 
@@ -96,7 +87,7 @@ public class NetworkScanRequest implements Runnable {
 		this.timeout = timeout;
 	}
 
-	public void setPortList(int portList) {
+	public void setPortList(int[] portList) {
 		this.portList = portList;
 	}
 
@@ -116,14 +107,22 @@ public class NetworkScanRequest implements Runnable {
 		this.handler = handler;
 	}
 
-	/** Runs scan against network */
-	public void scanNetwork() {
+	/**
+	 * Runs scan against network
+	 * 
+	 * @throws Exception
+	 */
+	public void scanNetwork() throws Exception {
 		if (numThreads < 1)
 			numThreads = DEFAULT_THREADS; // default
 		if (timeout < 1)
 			timeout = DEFAULT_TIMEOUT;
 
 		List<String> hosts = getHostsForSubnet();
+		if (hosts == null || hosts.size() == 0) {
+			sendUpdate(MSG_BADREQ, "Invalid IP address. Use 1.2.3.4 format.");
+			return;
+		}
 
 		if (isRunning())
 			killAll();
@@ -132,9 +131,12 @@ public class NetworkScanRequest implements Runnable {
 
 		for (int i = 0; i < hosts.size(); i++) {
 			String host = hosts.get(i);
-			HostScanRequest req = new HostScanRequest(host, portList, timeout,
-					this);
-			pool.execute(req);
+			for (int idx = 0; idx < portList.length; idx++) {
+				int port = portList[idx];
+				PortScanRequest req = new PortScanRequest(host, port, timeout,
+						this);
+				pool.execute(req);
+			}
 		}
 		pool.shutdown(); // no new tasks now
 
@@ -204,7 +206,12 @@ public class NetworkScanRequest implements Runnable {
 	@Override
 	public void run() {
 		if (handler != null)
-			scanNetwork();
+			try {
+				scanNetwork();
+			} catch (Exception e) {
+				sendUpdate(MSG_BADREQ,
+						"Unable to run network scan - check your request.");
+			}
 	}
 
 	public void setupIntent(Intent intent) {
@@ -216,32 +223,18 @@ public class NetworkScanRequest implements Runnable {
 	}
 
 	public void parseIntent(Intent intent) {
-		this
-				.setPortList(intent.getIntExtra(EXTRA_PORTLIST, this
-						.getPortList()));
-		this.setTimeout(intent.getIntExtra(EXTRA_TIMEOUT, this.getTimeout()));
-		this.setNetworkSubnet(intent.getStringExtra(EXTRA_SUBNET));
-		this.setSubnetBitMask(intent.getByteExtra(EXTRA_SUBNETBITMASK, this
-				.getSubnetBitMask()));
-		this.setNumThreads(intent.getIntExtra(EXTRA_NUMTHREADS, this
-				.getNumThreads()));
-	}
-
-	public static List<String> getListOfPortLists(Context context) {
-		List<String> items = new ArrayList<String>();
-		items.add(BaseWindow.getAppString(context, R.string.opt_ports_common));
-		items.add(BaseWindow.getAppString(context,
-				R.string.opt_ports_less_than_1024));
-		items.add(BaseWindow.getAppString(context, R.string.opt_ports_all));
-		return items;
-	}
-
-	public static int parsePortListString(Context context, String value) {
-		List<String> items = getListOfPortLists(context);
-		for (int i = 0; i < items.size(); i++)
-			if (items.get(i).equalsIgnoreCase(value))
-				return i + 1;
-		return 0;
+		try {
+			this.setPortList(intent.getIntArrayExtra(EXTRA_PORTLIST));
+			this.setTimeout(intent
+					.getIntExtra(EXTRA_TIMEOUT, this.getTimeout()));
+			this.setNetworkSubnet(intent.getStringExtra(EXTRA_SUBNET));
+			this.setSubnetBitMask(intent.getByteExtra(EXTRA_SUBNETBITMASK, this
+					.getSubnetBitMask()));
+			this.setNumThreads(intent.getIntExtra(EXTRA_NUMTHREADS, this
+					.getNumThreads()));
+		} catch (Exception e) {
+			Log.e(LOG_TAG, e.getMessage());
+		}
 	}
 
 	public static List<String> getListOfSubnetMasks() {

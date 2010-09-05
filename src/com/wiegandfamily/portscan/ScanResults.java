@@ -125,8 +125,10 @@ public class ScanResults extends BaseWindow {
 			case NetworkScanRequest.MSG_BADREQ:
 				txtBox = (TextView) findViewById(R.id.TextView02);
 				txtBox.setText(getAppString(R.string.err_badreq));
-				Toast.makeText(txtBox.getContext(),
-						getAppString(R.string.err_badreq), Toast.LENGTH_SHORT)
+				Toast.makeText(
+						txtBox.getContext(),
+						getAppString(R.string.err_badreq) + ": "
+								+ msg.obj.toString(), Toast.LENGTH_SHORT)
 						.show();
 				if (scanner != null)
 					try {

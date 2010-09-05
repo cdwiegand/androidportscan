@@ -1,14 +1,14 @@
 package com.wiegandfamily.portscan;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
-
-import com.mixpanel.android.mpmetrics.MPMetrics;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.util.DisplayMetrics;
+
+import com.mixpanel.android.mpmetrics.MPMetrics;
 
 public class ScanConfig extends BaseWindow {
 	@SuppressWarnings("unused")
@@ -65,19 +66,20 @@ public class ScanConfig extends BaseWindow {
 
 		EditText txtBox = (EditText) findViewById(R.id.EditText01);
 		txtBox.setText(myIP);
-		txtBox.requestFocus();
+		//txtBox.requestFocus();
 
-		List<String> items = NetworkScanRequest.getListOfPortLists(this);
-		Spinner spinner = (Spinner) findViewById(R.id.Spinner03);
+		txtBox = (EditText) findViewById(R.id.EditText06);
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		String defaultPorts = settings
+				.getString(
+						"defaultPortList",
+						"21, 22, 23, 25, 53, 80, 110, 119, 143, 161, 389, 443, 445, 1433, 1521, 3306, 5900, 8080, 1604, 3389");
+		txtBox.setText(defaultPorts);
+
+		List<String> items = NetworkScanRequest.getListOfSubnetMasks();
+		Spinner spinner = (Spinner) findViewById(R.id.Spinner04);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, items);
-		adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(adapter);
-
-		items = NetworkScanRequest.getListOfSubnetMasks();
-		spinner = (Spinner) findViewById(R.id.Spinner04);
-		adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, items);
 		adapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -87,7 +89,7 @@ public class ScanConfig extends BaseWindow {
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ScanConfig.this.onClick();
+				ScanConfig.this.onClickRun();
 			}
 		});
 	}
@@ -118,7 +120,7 @@ public class ScanConfig extends BaseWindow {
 	}
 
 	// Scan Now button click function
-	public void onClick() {
+	public void onClickRun() {
 		try {
 			track();
 		} catch (Exception e) {
@@ -145,13 +147,24 @@ public class ScanConfig extends BaseWindow {
 			}
 
 			EditText txtBox = (EditText) findViewById(R.id.EditText01);
+			try {
+				// try to parse IP or name
+				InetAddress.getByName(txtBox.getText().toString());
+			} catch (Exception e) {
+				throw new Exception(
+						"Invalid IP address/name. Use valid name or 1.2.3.4 format instead.");
+			}
 			nsr.setNetworkSubnet(txtBox.getText().toString());
 
-			Spinner spinner = (Spinner) findViewById(R.id.Spinner03);
-			nsr.setPortList(NetworkScanRequest.parsePortListString(this,
-					spinner.getSelectedItem().toString()));
+			txtBox = (EditText) findViewById(R.id.EditText06);
+			// text box with port list in it
+			String[] parts = txtBox.getText().toString().split("\\D+");
+			int[] portList = new int[parts.length];
+			for (int i = 0; i < parts.length; i++)
+				portList[i] = Integer.parseInt(parts[i].trim());
+			nsr.setPortList(portList);
 
-			spinner = (Spinner) findViewById(R.id.Spinner04);
+			Spinner spinner = (Spinner) findViewById(R.id.Spinner04);
 			String selectedSNM = spinner.getSelectedItem().toString();
 			byte snmByte = NetworkScanRequest
 					.parseSubnetMaskString(selectedSNM);
@@ -171,7 +184,8 @@ public class ScanConfig extends BaseWindow {
 			nsr.setupIntent(intent);
 			startActivity(intent);
 		} catch (Exception e) {
-			Toast.makeText(this, getAppString(R.string.err_badreq),
+			Toast.makeText(this,
+					getAppString(R.string.err_badreq) + ": " + e.getMessage(),
 					Toast.LENGTH_SHORT).show();
 		}
 	}

@@ -12,7 +12,7 @@ import org.apache.http.params.HttpParams;
 
 import android.util.Log;
 
-public class PortScanRequest {
+public class PortScanRequest implements Runnable {
 	private static final String LOG_TAG = "PortScanRequest";
 
 	private String host = "";
@@ -121,5 +121,10 @@ public class PortScanRequest {
 		} catch (Exception e) {
 			Log.e(LOG_TAG, e.getMessage());
 		}
+	}
+
+	@Override
+	public void run() {
+		scanPort();
 	}
 }

@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_subnet"></TextView>
-<EditText android:id="@+id/EditText01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:inputType="phone"></EditText>
-<TextView android:id="@+id/TextView04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_netmask"></TextView>
-<Spinner android:id="@+id/Spinner04" android:layout_height="wrap_content" android:layout_width="fill_parent"></Spinner>
-<TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_port_mode"></TextView>
-<Spinner android:id="@+id/Spinner03" android:layout_height="wrap_content" android:layout_width="fill_parent"></Spinner>
-<Button android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_scan_now" android:layout_gravity="center"></Button>
-<TextView android:id="@+d/TextView05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/prompt_see_prefs" android:layout_gravity="center"></TextView>
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<ScrollView android:id="@+id/ScrollView01"
+		android:layout_width="fill_parent" android:layout_height="fill_parent">
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/LinearLayout101" android:layout_width="fill_parent"
+			android:orientation="vertical" android:layout_height="fill_parent">
+			<TextView android:id="@+id/TextView01" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/prompt_subnet"></TextView>
+			<EditText android:id="@+id/EditText01"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:inputType="phone"></EditText>
+			<TextView android:id="@+id/TextView04" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/prompt_netmask"></TextView>
+			<Spinner android:id="@+id/Spinner04" android:layout_height="wrap_content"
+				android:layout_width="fill_parent"></Spinner>
+			<TextView android:id="@+id/TextView03" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/prompt_port_mode"></TextView>
+			
+			<EditText android:id="@+id/EditText06" android:layout_height="wrap_content" android:layout_width="fill_parent" android:maxLines="6" android:minLines="2" android:inputType="textMultiLine|textLongMessage"></EditText>
+			<Button android:id="@+id/Button01" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/prompt_scan_now"
+				android:layout_gravity="center"></Button>
+			<TextView android:id="@+d/TextView05" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="@string/prompt_see_prefs"
+				android:layout_gravity="center"></TextView>
+		</LinearLayout>
+	</ScrollView>
 </LinearLayout>
