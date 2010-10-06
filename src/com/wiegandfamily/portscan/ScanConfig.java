@@ -66,7 +66,7 @@ public class ScanConfig extends BaseWindow {
 
 		EditText txtBox = (EditText) findViewById(R.id.EditText01);
 		txtBox.setText(myIP);
-		//txtBox.requestFocus();
+		// txtBox.requestFocus();
 
 		txtBox = (EditText) findViewById(R.id.EditText06);
 		SharedPreferences settings = PreferenceManager
@@ -184,9 +184,11 @@ public class ScanConfig extends BaseWindow {
 			nsr.setupIntent(intent);
 			startActivity(intent);
 		} catch (Exception e) {
-			Toast.makeText(this,
-					getAppString(R.string.err_badreq) + ": " + e.getMessage(),
-					Toast.LENGTH_SHORT).show();
+			if (e.getMessage() != null)
+				Toast.makeText(
+						this,
+						getAppString(R.string.err_badreq) + ": "
+								+ e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 	}
 

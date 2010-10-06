@@ -29,7 +29,7 @@ public class BaseWindow extends Activity {
 					.getPackageName(), 0);
 			versionNumber = info.versionName;
 		} catch (Exception e) {
-			Log.e(LOG_TAG, e.getMessage());
+			SafeLogger.e(LOG_TAG, e.getMessage());
 		}
 		builder
 				.setMessage("Port Scanner "
@@ -37,6 +37,11 @@ public class BaseWindow extends Activity {
 						+ "\nCopyright 2010 by Chris Wiegand\n\nCovered by MIT license");
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+	
+	public static void Log(String tag, String msg) {
+		if (tag == null) tag = "PortScan";
+		if (msg != null) Log.e(tag, msg);
 	}
 	
 	protected void showPrefs() {

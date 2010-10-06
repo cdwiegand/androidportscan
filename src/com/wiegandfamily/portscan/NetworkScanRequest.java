@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 
 public class NetworkScanRequest implements Runnable {
 	private static final String LOG_TAG = "NetworkScanRequest";
@@ -144,7 +143,7 @@ public class NetworkScanRequest implements Runnable {
 		try {
 			pool.awaitTermination(65535, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
-			Log.e(LOG_TAG, e.getMessage());
+			SafeLogger.e(LOG_TAG, e.getMessage());
 		}
 
 		sendUpdate(MSG_DONE, "");
@@ -181,7 +180,7 @@ public class NetworkScanRequest implements Runnable {
 				hosts.add(networkStr + "." + host);
 			return hosts;
 		} catch (UnknownHostException e) {
-			Log.e(LOG_TAG, e.getMessage());
+			SafeLogger.e(LOG_TAG, e.getMessage());
 			return null;
 		}
 	}
@@ -233,7 +232,7 @@ public class NetworkScanRequest implements Runnable {
 			this.setNumThreads(intent.getIntExtra(EXTRA_NUMTHREADS, this
 					.getNumThreads()));
 		} catch (Exception e) {
-			Log.e(LOG_TAG, e.getMessage());
+			SafeLogger.e(LOG_TAG, e.getMessage());
 		}
 	}
 

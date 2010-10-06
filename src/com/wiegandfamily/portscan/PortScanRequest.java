@@ -10,8 +10,6 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-import android.util.Log;
-
 public class PortScanRequest implements Runnable {
 	private static final String LOG_TAG = "PortScanRequest";
 
@@ -108,7 +106,7 @@ public class PortScanRequest implements Runnable {
 					}
 					str += " OK '" + tmp + "'";
 				} catch (Exception e) {
-					Log.e(LOG_TAG, e.getMessage());
+					SafeLogger.e(LOG_TAG, e.getMessage());
 					str += " OK (cant read)";
 					if (s != null) {
 						s.close();
@@ -119,7 +117,7 @@ public class PortScanRequest implements Runnable {
 				str += " (disconnected)";
 			request.sendUpdate(NetworkScanRequest.MSG_FOUND, str);
 		} catch (Exception e) {
-			Log.e(LOG_TAG, e.getMessage());
+			SafeLogger.e(LOG_TAG, e.getMessage());
 		}
 	}
 
