@@ -37,6 +37,9 @@ public class ScanConfig extends BaseWindow {
 		PhoneHelper.getCarrierName(this);
 		PhoneHelper.getAppVersion(this);
 		PhoneHelper.getDisplayMetrics(this);
+		PhoneHelper.getPhoneType(this);
+		PhoneHelper.getNetworkType(this);
+
 		try {
 			if (mMPMetrics == null)
 				mMPMetrics = new MPMetrics(this, MIXPANEL_TOKEN);
@@ -103,6 +106,10 @@ public class ScanConfig extends BaseWindow {
 					.getAppVersion(null), "Unknown"));
 			properties.put("androidVer", coalesce(PhoneHelper
 					.getAndroidRelease(), "Unknown"));
+			properties.put("phoneType", coalesce(
+					PhoneHelper.getPhoneType(null), "Unknown"));
+			properties.put("networkType", coalesce(PhoneHelper
+					.getNetworkType(null), "Unknown"));
 			properties
 					.put("model", coalesce(PhoneHelper.getModel(), "Unknown"));
 			DisplayMetrics dm = PhoneHelper.getDisplayMetrics(null);

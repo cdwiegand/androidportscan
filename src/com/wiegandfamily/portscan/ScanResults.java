@@ -89,7 +89,7 @@ public class ScanResults extends BaseWindow {
 	protected void sendResultsViaEmail() {
 		TextView txtBox = getTextView();
 		Intent email = new Intent(Intent.ACTION_SEND);
-		email.setType("text/plain");
+		email.setType("message/rfc822");
 		email.putExtra(Intent.EXTRA_SUBJECT, "Network scan results for "
 				+ scanner.getNetworkSubnet() + scanner.getSubnetMaskString());
 		if (scanner != null)
