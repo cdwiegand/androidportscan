@@ -43,7 +43,7 @@ public class ScanResults extends BaseWindow {
 
 			txtBox = (TextView) findViewById(R.id.TextView01);
 			txtBox.setText(getAppString(R.string.scanning) + " "
-					+ scanner.getNetworkSubnet() + "...");
+					+ scanner.getHostDescription() + "...");
 
 			Thread thread = new Thread(scanner);
 			thread.start();
@@ -91,7 +91,7 @@ public class ScanResults extends BaseWindow {
 		Intent email = new Intent(Intent.ACTION_SEND);
 		email.setType("message/rfc822");
 		email.putExtra(Intent.EXTRA_SUBJECT, "Network scan results for "
-				+ scanner.getNetworkSubnet() + scanner.getSubnetMaskString());
+				+ scanner.getHostDescription());
 		if (scanner != null)
 			email.putExtra(Intent.EXTRA_TEXT, scanner.getResults());
 		else

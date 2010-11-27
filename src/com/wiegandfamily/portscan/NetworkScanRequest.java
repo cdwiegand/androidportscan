@@ -1,8 +1,6 @@
 package com.wiegandfamily.portscan;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -28,16 +26,19 @@ public class NetworkScanRequest implements Runnable {
 	public static final int MSG_BADREQ = 4;
 
 	public static final String EXTRA_PORTLIST = "EXTRA_PORTLIST";
-	public static final String EXTRA_SUBNET = "EXTRA_SUBNET";
+	public static final String EXTRA_HOSTPARTS = "EXTRA_SUBNET";
 	public static final String EXTRA_TIMEOUT = "EXTRA_TIMEOUT";
-	public static final String EXTRA_SUBNETBITMASK = "EXTRA_SUBNETBITMASK";
+	public static final String EXTRA_ENDINGHOSTPART4 = "EXTRA_ENDINGHOSTPART4";
 	public static final String EXTRA_NUMTHREADS = "EXTRA_NUMTHREADS";
 
 	private ExecutorService pool = null;
 	private Handler handler = null;
 	protected int[] portList = {};
-	protected String networkSubnet = "192.168.15.0";
-	protected byte subnetBitMask = 24; // "/24"
+	protected int hostPart1 = 0;
+	protected int hostPart2 = 0;
+	protected int hostPart3 = 0;
+	protected int hostPart4s = 0;
+	protected int hostPart4e = 0;
 	protected int timeout = 0;
 	protected int numThreads = 0;
 
@@ -62,12 +63,17 @@ public class NetworkScanRequest implements Runnable {
 		return this.numThreads;
 	}
 
-	public String getNetworkSubnet() {
-		return this.networkSubnet;
+	public int getEndingHostPart4() {
+		return hostPart4e;
 	}
 
-	public byte getSubnetBitMask() {
-		return this.subnetBitMask;
+	public int[] getHostParts() {
+		int[] parts = new int[4];
+		parts[0] = hostPart1;
+		parts[1] = hostPart2;
+		parts[2] = hostPart3;
+		parts[3] = hostPart4s;
+		return parts;
 	}
 
 	public Handler getHandler() {
@@ -94,12 +100,20 @@ public class NetworkScanRequest implements Runnable {
 		this.numThreads = numThreads;
 	}
 
-	public void setNetworkSubnet(String networkSubnet) {
-		this.networkSubnet = networkSubnet;
+	public void setHostParts(int[] parts) {
+		setHostParts(parts[0], parts[1], parts[2], parts[3]);
 	}
 
-	public void setSubnetBitMask(byte subnetBitMask) {
-		this.subnetBitMask = subnetBitMask;
+	public void setHostParts(int hostPart1, int hostPart2, int hostPart3,
+			int hostPart4) {
+		this.hostPart1 = hostPart1;
+		this.hostPart2 = hostPart2;
+		this.hostPart3 = hostPart3;
+		this.hostPart4s = hostPart4;
+	}
+
+	public void setEndingHostPart4(int hostPart4) {
+		this.hostPart4e = hostPart4;
 	}
 
 	public void setHandler(Handler handler) {
@@ -149,37 +163,21 @@ public class NetworkScanRequest implements Runnable {
 		sendUpdate(MSG_DONE, "");
 		pool = null;
 	}
+	
+	public String getHostDescription() {
+		return hostPart1 + "." + hostPart2 + "." + hostPart3 + "." + hostPart4s + "-" + hostPart4e;
+	}
 
 	private List<String> getHostsForSubnet() {
 		List<String> hosts = new ArrayList<String>();
 		try {
-			Inet4Address addr = (Inet4Address) InetAddress
-					.getByName(this.networkSubnet);
-			// now that we have a standardized form, let's do our math
-			String ip = addr.getHostAddress();
-			String networkStr = ip.substring(0, ip.lastIndexOf('.'));
-			// so now it's 192.168.15
-			int part4 = Integer.parseInt(ip.substring(ip.lastIndexOf('.') + 1));
-			// and that's 67 (for example)
-
-			// now, calculate out our range based on subNetBitMask
-			int subnetSize = (int) Math.pow(2, 32 - this.subnetBitMask);
-			// /24 -> 2^(32-24) -> 256
-			int offset = part4 % subnetSize; // .67 would give us 67
-			int minVal = part4 - offset; // give us .0
-			int maxVal = minVal + subnetSize - 1; // give us .255
-
-			// can't send to network or broadcast addresses!
-			if (minVal != maxVal) {
-				minVal++;
-				maxVal--;
-			}
+			String networkStr = hostPart1 + "." + hostPart2 + "." + hostPart3;
 
 			// now add each host
-			for (int host = minVal; host <= maxVal; host++)
+			for (int host = hostPart4s; host <= hostPart4e; host++)
 				hosts.add(networkStr + "." + host);
 			return hosts;
-		} catch (UnknownHostException e) {
+		} catch (Exception e) {
 			SafeLogger.e(LOG_TAG, e.getMessage());
 			return null;
 		}
@@ -215,9 +213,9 @@ public class NetworkScanRequest implements Runnable {
 
 	public void setupIntent(Intent intent) {
 		intent.putExtra(EXTRA_PORTLIST, this.getPortList());
-		intent.putExtra(EXTRA_SUBNET, this.getNetworkSubnet());
+		intent.putExtra(EXTRA_HOSTPARTS, this.getHostParts());
 		intent.putExtra(EXTRA_TIMEOUT, this.getTimeout());
-		intent.putExtra(EXTRA_SUBNETBITMASK, this.getSubnetBitMask());
+		intent.putExtra(EXTRA_ENDINGHOSTPART4, this.getEndingHostPart4());
 		intent.putExtra(EXTRA_NUMTHREADS, this.getNumThreads());
 	}
 
@@ -226,33 +224,13 @@ public class NetworkScanRequest implements Runnable {
 			this.setPortList(intent.getIntArrayExtra(EXTRA_PORTLIST));
 			this.setTimeout(intent
 					.getIntExtra(EXTRA_TIMEOUT, this.getTimeout()));
-			this.setNetworkSubnet(intent.getStringExtra(EXTRA_SUBNET));
-			this.setSubnetBitMask(intent.getByteExtra(EXTRA_SUBNETBITMASK, this
-					.getSubnetBitMask()));
+			this.setHostParts(intent.getIntArrayExtra(EXTRA_HOSTPARTS));
+			this.setEndingHostPart4(intent.getIntExtra(EXTRA_ENDINGHOSTPART4,
+					this.getEndingHostPart4()));
 			this.setNumThreads(intent.getIntExtra(EXTRA_NUMTHREADS, this
 					.getNumThreads()));
 		} catch (Exception e) {
 			SafeLogger.e(LOG_TAG, e.getMessage());
 		}
-	}
-
-	public static List<String> getListOfSubnetMasks() {
-		List<String> items = new ArrayList<String>();
-		for (int i = 24; i <= 29; i++) {
-			int subnetSize = (int) Math.pow(2, 32 - i);
-			items.add("/" + i + " (255.255.255." + (256 - subnetSize) + ") "
-					+ (subnetSize - 2) + " hosts");
-		}
-		items.add("/32 (255.255.255.255) 1 host");
-		return items;
-	}
-
-	public static byte parseSubnetMaskString(String value) {
-		return Byte.parseByte(value.substring(1, 3));
-		// "/24..." becomes "24" becomes 24
-	}
-
-	public String getSubnetMaskString() {
-		return "/" + String.valueOf(this.subnetBitMask);
 	}
 }

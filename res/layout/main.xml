@@ -7,18 +7,41 @@
 			android:id="@+id/LinearLayout101" android:layout_width="fill_parent"
 			android:orientation="vertical" android:layout_height="fill_parent">
 			<TextView android:id="@+id/TextView01" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:text="@string/prompt_subnet"></TextView>
-			<EditText android:id="@+id/EditText01"
-				android:layout_height="wrap_content" android:layout_width="fill_parent"
-				android:inputType="phone"></EditText>
+				android:layout_height="wrap_content" android:text="@string/prompt_startsubnet"></TextView>
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:id="@+id/LinearLayout106a" android:layout_width="fill_parent"
+				android:orientation="horizontal" android:layout_height="fill_parent">
+				<EditText android:id="@+id/IPStart1" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:inputType="phone"></EditText>
+				<EditText android:id="@+id/IPStart2" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:inputType="phone"></EditText>
+				<EditText android:id="@+id/IPStart3" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:inputType="phone"></EditText>
+				<EditText android:id="@+id/IPStart4" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:inputType="phone"></EditText>
+			</LinearLayout>
 			<TextView android:id="@+id/TextView04" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:text="@string/prompt_netmask"></TextView>
-			<Spinner android:id="@+id/Spinner04" android:layout_height="wrap_content"
-				android:layout_width="fill_parent"></Spinner>
+				android:layout_height="wrap_content" android:text="@string/prompt_endsubnet"></TextView>
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:id="@+id/LinearLayout106a" android:layout_width="fill_parent"
+				android:orientation="horizontal" android:layout_height="fill_parent">
+				<TextView android:id="@+id/IPEnd1" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:text="XXX" android:inputType="phone"></TextView>
+				<TextView android:id="@+id/IPEnd2" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:text="XXX" android:inputType="phone"></TextView>
+				<TextView android:id="@+id/IPEnd3" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:text="XXX" android:inputType="phone"></TextView>
+				<EditText android:id="@+id/IPEnd4" android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:layout_weight="1" android:inputType="phone"></EditText>
+			</LinearLayout>
+
 			<TextView android:id="@+id/TextView03" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/prompt_port_mode"></TextView>
-			
-			<EditText android:id="@+id/EditText06" android:layout_height="wrap_content" android:layout_width="fill_parent" android:maxLines="6" android:minLines="2" android:inputType="textMultiLine|textLongMessage"></EditText>
+
+			<EditText android:id="@+id/EditText06"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:maxLines="6" android:minLines="2"
+				android:inputType="textMultiLine|textLongMessage"></EditText>
 			<Button android:id="@+id/Button01" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/prompt_scan_now"
 				android:layout_gravity="center"></Button>

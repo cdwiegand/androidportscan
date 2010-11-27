@@ -13,10 +13,11 @@ import android.util.Log;
 
 public abstract class NetworkHelper {
 	private static final String LOG_TAG = "NetworkHelper";
-	
+
 	public static boolean verifyWifiConnected(Context context) {
 		try {
-			WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+			WifiManager wifiManager = (WifiManager) context
+					.getSystemService(Context.WIFI_SERVICE);
 			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 			return (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED);
 		} catch (Exception ex) {
@@ -25,7 +26,7 @@ public abstract class NetworkHelper {
 		}
 	}
 
-	protected static String getLocalIPAddress() {
+	protected static String getLocalIPv4Address() {
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface
 					.getNetworkInterfaces(); en.hasMoreElements();) {
@@ -34,7 +35,10 @@ public abstract class NetworkHelper {
 						.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 					InetAddress inetAddress = enumIpAddr.nextElement();
 					if (!inetAddress.isLoopbackAddress()) {
-						return inetAddress.getHostAddress().toString();
+						String hostAddress = inetAddress.getHostAddress()
+								.toString();
+						if (hostAddress.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"))
+							return hostAddress;
 					}
 				}
 			}

@@ -14,6 +14,8 @@
 <string name="prompt_wifionly_desc">Whether to restrict scanning to wifi only</string>
 <string name="prompt_defaultports">Default Ports to Scan</string>
 <string name="prompt_subnet">Single IP Address or Hostname:</string>
+<string name="prompt_startsubnet">Starting IP Address:</string>
+<string name="prompt_endsubnet">Ending IP address:</string>
 <string name="prompt_netmask">Subnet size:</string>
 <string name="prompt_scan_now">Scan Now!</string>
 <string name="prompt_see_prefs">More options are in Prefs menu.</string>

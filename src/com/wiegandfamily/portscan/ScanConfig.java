@@ -1,22 +1,21 @@
 package com.wiegandfamily.portscan;
 
-import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.List;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
+import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mixpanel.android.mpmetrics.MPMetrics;
@@ -65,10 +64,36 @@ public class ScanConfig extends BaseWindow {
 
 	protected void setup() {
 		// get local IP address
-		String myIP = NetworkHelper.getLocalIPAddress();
+		String myIP = NetworkHelper.getLocalIPv4Address();
+		if (myIP == null)
+			myIP = "0.0.0.0";
+		String[] parts = myIP.split("\\.");
 
-		EditText txtBox = (EditText) findViewById(R.id.EditText01);
-		txtBox.setText(myIP);
+		KeyListener kl = new KeyListener();
+
+		EditText txtBox = (EditText) findViewById(R.id.IPStart1);
+		txtBox.setText(parts[0]);
+		txtBox.setOnKeyListener(kl);
+		TextView txtView = (TextView) findViewById(R.id.IPEnd1);
+		txtView.setText(parts[0]);
+
+		txtBox = (EditText) findViewById(R.id.IPStart2);
+		txtBox.setOnKeyListener(kl);
+		txtBox.setText(parts[1]);
+		txtView = (TextView) findViewById(R.id.IPEnd2);
+		txtView.setText(parts[1]);
+
+		txtBox = (EditText) findViewById(R.id.IPStart3);
+		txtBox.setOnKeyListener(kl);
+		txtBox.setText(parts[2]);
+		txtView = (TextView) findViewById(R.id.IPEnd3);
+		txtView.setText(parts[2]);
+
+		txtBox = (EditText) findViewById(R.id.IPStart4);
+		// no copy of content!
+		txtBox.setText(parts[3]);
+		txtBox = (EditText) findViewById(R.id.IPEnd4);
+		txtBox.setText(parts[3]);
 		// txtBox.requestFocus();
 
 		txtBox = (EditText) findViewById(R.id.EditText06);
@@ -80,14 +105,6 @@ public class ScanConfig extends BaseWindow {
 						"21, 22, 23, 25, 53, 80, 110, 119, 143, 161, 389, 443, 445, 1433, 1521, 3306, 5900, 8080, 1604, 3389");
 		txtBox.setText(defaultPorts);
 
-		List<String> items = NetworkScanRequest.getListOfSubnetMasks();
-		Spinner spinner = (Spinner) findViewById(R.id.Spinner04);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, items);
-		adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(adapter);
-
 		Button btn = (Button) findViewById(R.id.Button01);
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -95,6 +112,26 @@ public class ScanConfig extends BaseWindow {
 				ScanConfig.this.onClickRun();
 			}
 		});
+	}
+
+	protected class KeyListener implements OnKeyListener {
+		@Override
+		public boolean onKey(View v, int keyCode, KeyEvent event) {
+			syncUI();
+			return false;
+		}
+	}
+
+	protected void syncUI() {
+		EditText start1 = (EditText) findViewById(R.id.IPStart1);
+		EditText start2 = (EditText) findViewById(R.id.IPStart2);
+		EditText start3 = (EditText) findViewById(R.id.IPStart3);
+		TextView end1 = (TextView) findViewById(R.id.IPEnd1);
+		TextView end2 = (TextView) findViewById(R.id.IPEnd2);
+		TextView end3 = (TextView) findViewById(R.id.IPEnd3);
+		end1.setText(start1.getText().toString());
+		end2.setText(start2.getText().toString());
+		end3.setText(start3.getText().toString());
 	}
 
 	private void track() {
@@ -153,29 +190,26 @@ public class ScanConfig extends BaseWindow {
 				return;
 			}
 
-			EditText txtBox = (EditText) findViewById(R.id.EditText01);
-			try {
-				// try to parse IP or name
-				InetAddress.getByName(txtBox.getText().toString());
-			} catch (Exception e) {
-				throw new Exception(
-						"Invalid IP address/name. Use valid name or 1.2.3.4 format instead.");
-			}
-			nsr.setNetworkSubnet(txtBox.getText().toString());
+			EditText txtBox1 = (EditText) findViewById(R.id.IPStart1);
+			EditText txtBox2 = (EditText) findViewById(R.id.IPStart2);
+			EditText txtBox3 = (EditText) findViewById(R.id.IPStart3);
+			EditText txtBox4s = (EditText) findViewById(R.id.IPStart4);
+			EditText txtBox4e = (EditText) findViewById(R.id.IPEnd4);
+			int start1 = Integer.parseInt(txtBox1.getText().toString());
+			int start2 = Integer.parseInt(txtBox2.getText().toString());
+			int start3 = Integer.parseInt(txtBox3.getText().toString());
+			int start4 = Integer.parseInt(txtBox4s.getText().toString());
+			int end4 = Integer.parseInt(txtBox4e.getText().toString());
+			nsr.setHostParts(start1, start2, start3, start4);
+			nsr.setEndingHostPart4(end4);
 
-			txtBox = (EditText) findViewById(R.id.EditText06);
+			EditText txtBox = (EditText) findViewById(R.id.EditText06);
 			// text box with port list in it
 			String[] parts = txtBox.getText().toString().split("\\D+");
 			int[] portList = new int[parts.length];
 			for (int i = 0; i < parts.length; i++)
 				portList[i] = Integer.parseInt(parts[i].trim());
 			nsr.setPortList(portList);
-
-			Spinner spinner = (Spinner) findViewById(R.id.Spinner04);
-			String selectedSNM = spinner.getSelectedItem().toString();
-			byte snmByte = NetworkScanRequest
-					.parseSubnetMaskString(selectedSNM);
-			nsr.setSubnetBitMask(snmByte);
 
 			if (settings != null)
 				try {
